@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.luffy-hermes-home/
+.luffy-out/
+__pycache__/
+.venv/
+venv/
+node_modules/
+.DS_Store
+*.pyc
+.pytest_cache/
