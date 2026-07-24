@@ -1,0 +1,113 @@
+# Ingest a Luffy review run into central memory/ on this hub repo.
+#
+# Triggered by target repos via:
+#   POST /repos/archit15singh/luffy-pr-review-agent/dispatches
+#   { "event_type": "luffy-run", "client_payload": { "run": { ... } } }
+#
+# Requires: target secret LUFFY_HUB_TOKEN (or GITHUB_TOKEN when self-hosted).
+
+name: Ingest Luffy Run
+
+on:
+  repository_dispatch:
+    types: [luffy-run]
+  workflow_dispatch:
+    inputs:
+      payload_json:
+        description: Full client_payload JSON (object with "run" key) for manual tests
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  # Serialize all hub memory commits to avoid push races
+  group: luffy-hub-memory-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    name: Ingest run → memory/
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout hub
+        uses: actions/checkout@v4
+        with:
+          # Need full history for safer push; token is GITHUB_TOKEN
+          fetch-depth: 0
+
+      - name: Materialize payload
+        id: payload
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+          MANUAL_PAYLOAD: ${{ inputs.payload_json }}
+        run: |
+          set -euo pipefail
+          mkdir -p .luffy-hub
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            printf '%s' "$MANUAL_PAYLOAD" > .luffy-hub/client_payload.json
+          else
+            printf '%s' "$DISPATCH_PAYLOAD" > .luffy-hub/client_payload.json
+          fi
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path(".luffy-hub/client_payload.json")
+          data = json.loads(p.read_text())
+          # Accept either {run: {...}} or bare run object
+          run = data.get("run", data)
+          assert isinstance(run, dict), "payload must contain a run object"
+          assert run.get("source_repo"), "source_repo required"
+          Path(".luffy-hub/run.json").write_text(json.dumps({"run": run}, indent=2))
+          print(f"source_repo={run.get('source_repo')}")
+          print(f"trace_id={run.get('trace_id')}")
+          print(f"pr={run.get('pr_number')}")
+          PY
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Apply memory updates
+        env:
+          CLIENT_PAYLOAD_FILE: ${{ github.workspace }}/.luffy-hub/client_payload.json
+          HUB_ROOT: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hub-ingest-run.py
+
+      - name: Commit and push memory
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "luffy-hub-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add memory/
+          if git diff --cached --quiet; then
+            echo "No memory changes to commit"
+            exit 0
+          fi
+          MSG="chore(memory): ingest $(tr -d '\n' < .luffy-ingest-summary.txt 2>/dev/null || echo luffy-run)"
+          git commit -m "$MSG"
+          # Retry push for concurrent ingests
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Pushed memory update"
+              exit 0
+            fi
+            echo "Push conflict; retry $i"
+            sleep $((i * 2))
+          done
+          echo "::error::Failed to push memory after retries"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Hub memory ingest"
+            if [[ -f .luffy-ingest-summary.txt ]]; then
+              echo "- $(cat .luffy-ingest-summary.txt)"
+            fi
+            echo "- Event: \`${{ github.event_name }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
