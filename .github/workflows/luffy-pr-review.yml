@@ -2,7 +2,7 @@
 #
 # Trigger: @luffy review this pr
 # Required secret: OPENROUTER_API_KEY
-# Optional: LUFFY_MODEL, LUFFY_HUB_TOKEN, LUFFY_HUB_REPO
+# Optional: LUFFY_MODEL (default anthropic/claude-opus-5), LUFFY_HUB_TOKEN, LUFFY_HUB_REPO
 
 name: Luffy PR Review
 
@@ -39,7 +39,7 @@ jobs:
         )
       )
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
 
     steps:
       - name: Resolve PR number & gate
@@ -50,6 +50,10 @@ jobs:
           IS_PR: ${{ github.event.issue.pull_request != null }}
           INPUT_PR: ${{ github.event.inputs.pr_number }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+          # F11 cost control: who may trigger paid OpenRouter reviews
+          AUTHOR_ASSOCIATION: ${{ github.event.comment.author_association }}
+          # Comma list; override via repo var LUFFY_ALLOWED_ASSOCIATIONS if needed
+          ALLOWED_ASSOCIATIONS: ${{ vars.LUFFY_ALLOWED_ASSOCIATIONS || 'OWNER,MEMBER,COLLABORATOR,CONTRIBUTOR' }}
         run: |
           set -euo pipefail
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
@@ -58,22 +62,51 @@ jobs:
             echo "trigger_comment=workflow_dispatch" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          echo "denied=false" >> "$GITHUB_OUTPUT"
           if [[ "${IS_PR}" != "true" ]]; then
             echo "matched=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if printf '%s' "${COMMENT_BODY:-}" | grep -Eiq '@luffy[[:space:]]+review([[:space:]]+this[[:space:]]+pr)?\b'; then
-            echo "matched=true" >> "$GITHUB_OUTPUT"
-            echo "pr_number=${ISSUE_NUMBER}" >> "$GITHUB_OUTPUT"
-            {
-              echo "trigger_comment<<EOF"
-              printf '%s\n' "${COMMENT_BODY:-}"
-              echo "EOF"
-            } >> "$GITHUB_OUTPUT"
-          else
+          if ! printf '%s' "${COMMENT_BODY:-}" | grep -Eiq '@luffy[[:space:]]+review([[:space:]]+this[[:space:]]+pr)?\b'; then
             echo "matched=false" >> "$GITHUB_OUTPUT"
             echo "Comment did not match @luffy review pattern; skipping."
+            exit 0
           fi
+          # Author association allowlist (case-insensitive). Empty ALLOWED = no gate.
+          assoc="$(printf '%s' "${AUTHOR_ASSOCIATION:-NONE}" | tr '[:lower:]' '[:upper:]')"
+          allowed="$(printf '%s' "${ALLOWED_ASSOCIATIONS:-}" | tr '[:lower:]' '[:upper:]' | tr -d ' ')"
+          if [[ -n "$allowed" ]]; then
+            ok=false
+            IFS=',' read -ra parts <<<"$allowed"
+            for a in "${parts[@]}"; do
+              [[ -n "$a" && "$a" == "$assoc" ]] && ok=true && break
+            done
+            if [[ "$ok" != "true" ]]; then
+              echo "matched=false" >> "$GITHUB_OUTPUT"
+              echo "denied=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::Skipping Luffy: author_association=$assoc not in allowlist ($allowed)"
+              exit 0
+            fi
+          fi
+          echo "matched=true" >> "$GITHUB_OUTPUT"
+          echo "pr_number=${ISSUE_NUMBER}" >> "$GITHUB_OUTPUT"
+          {
+            echo "trigger_comment<<EOF"
+            printf '%s\n' "${COMMENT_BODY:-}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # F11 deny UX: visible signal without spending OpenRouter tokens
+      - name: React denied (association)
+        if: steps.gate.outputs.denied == 'true' && github.event_name == 'issue_comment'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" \
+            -f content='confused' || true
 
       - name: Checkout default branch (Luffy system)
         if: steps.gate.outputs.matched == 'true'
@@ -95,16 +128,23 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ steps.gate.outputs.pr_number }}
+          LUFFY_ROOT: ${{ github.workspace }}/luffy
         run: |
           set -euo pipefail
           PATHS_FILE="${{ github.workspace }}/pr-paths.txt"
-          # Leading slash for single-file sparse paths (git no-cone)
-          gh pr view "$PR_NUMBER" --repo "$REPO" --json files \
-            --jq '.files[].path' | head -200 | sed 's|^|/|' > "$PATHS_FILE" || true
-          COUNT=$(grep -c . "$PATHS_FILE" || echo 0)
+          # Prefer shared script (leading slash for git sparse --no-cone)
+          if [[ -x "$LUFFY_ROOT/scripts/sparse-pr-paths.sh" ]]; then
+            "$LUFFY_ROOT/scripts/sparse-pr-paths.sh" > "$PATHS_FILE" || true
+          else
+            gh pr view "$PR_NUMBER" --repo "$REPO" --json files \
+              --jq '.files[].path' | head -200 | sed 's|^|/|' > "$PATHS_FILE" || true
+          fi
+          # F13: never use `grep -c || echo 0` — grep -c prints 0 AND exits 1 on empty,
+          # which produces "0\n0" and breaks integer compare / forces full monorepo clone.
+          COUNT="$(grep -c . "$PATHS_FILE" 2>/dev/null || true)"
+          COUNT="${COUNT:-0}"
           echo "PR changed files: $COUNT"
           if [[ "$COUNT" -ge 1 && "$COUNT" -le 200 ]]; then
-            # Multiline string for actions/checkout sparse-checkout input
             {
               echo "sparse<<EOF"
               cat "$PATHS_FILE"
@@ -135,7 +175,7 @@ jobs:
           fetch-depth: 1
           ref: refs/pull/${{ steps.gate.outputs.pr_number }}/head
 
-      # F2: cache Hermes install tree (restore + save)
+      # F2/F14: cache Hermes install (stable key; save only on miss — avoid per-run thrash)
       - name: Restore Hermes install cache
         if: steps.gate.outputs.matched == 'true'
         id: hermes_cache
@@ -145,7 +185,7 @@ jobs:
           path: |
             ~/.local
             ~/.hermes
-          key: luffy-hermes-bin-${{ runner.os }}-v2
+          key: luffy-hermes-bin-${{ runner.os }}-v3
           restore-keys: |
             luffy-hermes-bin-${{ runner.os }}-
 
@@ -186,7 +226,10 @@ jobs:
           fi
           export LUFFY_HUB_REPO="${LUFFY_HUB_REPO:-archit15singh/luffy-pr-review-agent}"
           export LUFFY_HUB_PUBLISH="${LUFFY_HUB_PUBLISH:-1}"
+          # Default showcase model: Claude Opus 5 via OpenRouter
+          export LUFFY_MODEL="${LUFFY_MODEL:-anthropic/claude-opus-5}"
           export PATH="${HOME}/.local/bin:${HOME}/.hermes/bin:${PATH}"
+          chmod +x "$LUFFY_ROOT/scripts/"*.sh "$LUFFY_ROOT/scripts/"*.py 2>/dev/null || true
           chmod +x "$LUFFY_ROOT/scripts/"*.sh
           if [[ -z "${OPENROUTER_API_KEY:-}" ]]; then
             echo "::error::Secret OPENROUTER_API_KEY is not set"
@@ -197,7 +240,8 @@ jobs:
             export LUFFY_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
             "$LUFFY_ROOT/scripts/save-trace.sh" || true
             "$LUFFY_ROOT/scripts/publish-run-to-hub.sh" || true
-            echo "pipeline_rc=0" >> "$GITHUB_OUTPUT"
+            # F15: non-zero so React result shows ❌ not ✅
+            echo "pipeline_rc=1" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           set +e
@@ -295,14 +339,15 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-      # F2: persist Hermes install for next runs (actions/cache@v4 saves on post if restore used;
-      # explicit save ensures install after a miss is stored even when job continues after failures)
+      # F14: only write cache on miss (stable key). Exact hits skip save.
       - name: Save Hermes install cache
-        if: steps.gate.outputs.matched == 'true' && always()
+        if: >
+          steps.gate.outputs.matched == 'true' && always() &&
+          steps.hermes_cache.outputs.cache-hit != 'true'
         continue-on-error: true
         uses: actions/cache/save@v4
         with:
           path: |
             ~/.local
             ~/.hermes
-          key: luffy-hermes-bin-${{ runner.os }}-v2-${{ github.run_id }}
+          key: luffy-hermes-bin-${{ runner.os }}-v3

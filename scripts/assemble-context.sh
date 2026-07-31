@@ -139,6 +139,7 @@ replacements = {
     "{{FILES_SUMMARY}}": files_summary,
     "{{DIFF_PATH}}": diff_path,
     "{{DIFF_TRUNCATED}}": "true" if diff_truncated else "false",
+    "{{DIFF_SIZE}}": str(diff_size),
     "{{CONTEXT_PATH}}": os.environ["CONTEXT_PATH"],
     "{{WORKSPACE_ROOT}}": os.environ.get("WORKSPACE_ROOT", os.getcwd()),
 }

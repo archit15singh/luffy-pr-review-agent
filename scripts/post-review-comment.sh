@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 # Post Luffy's Markdown review as a GitHub PR comment.
+# Soft-deletes prior Luffy comments on the same PR (marker: <!-- luffy-review pr=N)
+# so re-runs replace noise instead of stacking.
 #
 # Usage:
 #   ./scripts/post-review-comment.sh [review.md] [pr_number]
+#
+# Env:
+#   REPO / GITHUB_REPOSITORY
+#   GH_TOKEN / GITHUB_TOKEN
+#   LUFFY_REPLACE_PREVIOUS=1 (default) — delete prior marker comments before post
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -14,6 +21,7 @@ die() { echo "::error::$*" >&2; exit 1; }
 REVIEW_FILE="${1:-${REVIEW_FILE:-}}"
 PR_NUMBER="${2:-${PR_NUMBER:-}}"
 REPO="${REPO:-${GITHUB_REPOSITORY:-}}"
+REPLACE="${LUFFY_REPLACE_PREVIOUS:-1}"
 
 if [[ -z "$REVIEW_FILE" ]]; then
   if compgen -G "$OUT_DIR/review-*.md" >/dev/null; then
@@ -40,6 +48,33 @@ fi
 export GH_REPO="$REPO"
 export GH_TOKEN="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
 command -v gh >/dev/null 2>&1 || die "gh CLI is required"
+
+# ---------------------------------------------------------------------------
+# F12: replace previous Luffy review comments (same PR marker)
+# ---------------------------------------------------------------------------
+if [[ "$REPLACE" == "1" || "$REPLACE" == "true" ]]; then
+  marker="<!-- luffy-review pr=${PR_NUMBER}"
+  log "Looking for prior Luffy comments with marker: ${marker}"
+  # List issue comments; delete any containing the pr-specific HTML marker.
+  # Soft-fail: never block posting the new review.
+  set +e
+  # jq env.* reads process env (gh uses gojq)
+  ids="$(
+    MARKER="$marker" gh api --paginate "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+      --jq '.[] | select(.body != null and (.body | contains(env.MARKER))) | .id' 2>/dev/null
+  )"
+  if [[ -n "${ids:-}" ]]; then
+    while IFS= read -r cid; do
+      [[ -z "$cid" ]] && continue
+      log "Deleting prior Luffy comment id=$cid"
+      gh api --method DELETE "repos/${REPO}/issues/comments/${cid}" >/dev/null 2>&1 \
+        || log "warn: could not delete comment $cid"
+    done <<<"$ids"
+  else
+    log "No prior Luffy comments to replace"
+  fi
+  set -e
+fi
 
 log "Posting review to $REPO#$PR_NUMBER from $REVIEW_FILE"
 gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file "$REVIEW_FILE"
