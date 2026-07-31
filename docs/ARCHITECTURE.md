@@ -23,7 +23,7 @@ Luffy is a gated GitHub Actions control plane that assembles a bounded PR contex
 | Review | `scripts/run-hermes-review.sh` | Hermes one-shot on `WORKSPACE_ROOT` |
 | Normalize | `scripts/normalize-review.py` | Contract, fences, size, HTML marker |
 | Distill | `scripts/distill-memory.sh` | Append structured memory block |
-| Post | `scripts/post-review-comment.sh` | `gh pr comment` |
+| Post | `scripts/post-review-comment.sh` | Delete prior `<!-- luffy-review pr=N` comments, then `gh pr comment` |
 | Orchestrate | `scripts/run-luffy-review.sh` | Compose stages + timings |
 | Trace | `scripts/save-trace.sh` | Redacted per-run package → Actions artifact |
 | Hub publish | `scripts/publish-run-to-hub.sh` | `repository_dispatch` → hub |

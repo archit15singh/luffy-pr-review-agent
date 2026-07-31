@@ -9,7 +9,11 @@
 
 ## High-ROI fixes
 
-See [ROI-FIXES.md](ROI-FIXES.md) for the ranked backlog. Shipped this sprint: **F1–F6** (shallow+sparse checkout, Hermes install cache, hub memory preload, drop broken home cache, reactions, shallow hub clone).
+See [ROI-FIXES.md](ROI-FIXES.md) for the ranked backlog.
+
+- **Sprint 1 (F1–F6):** shallow+sparse checkout, Hermes install cache, hub memory preload, drop broken home cache, reactions, shallow hub clone  
+- **Sprint 2 (F11–F12):** author association allowlist, replace previous Luffy PR comment  
+- **Sprint 3 (F13–F17):** sparse count bugfix, stable Hermes cache key, honest fail reaction, deny 😕, drop dead install copy
 
 ## Central hub memory (cross-repo)
 
@@ -76,9 +80,11 @@ Requires: `gh` authenticated, network for Hermes install + OpenRouter.
 ## Cost controls
 
 - Explicit comment trigger only (no auto on every push)
+- **Author association allowlist** (default `OWNER,MEMBER,COLLABORATOR,CONTRIBUTOR`) — override with repo variable `LUFFY_ALLOWED_ASSOCIATIONS` (comma list; empty = no gate)
 - Concurrency cancel-in-progress per PR
 - Diff size cap (`MAX_DIFF_BYTES`, default 400000)
 - Job timeout 45 minutes
+- Re-runs **replace** prior Luffy comments on the same PR (marker `<!-- luffy-review pr=N`); set `LUFFY_REPLACE_PREVIOUS=0` to stack
 
 ## Memory
 
