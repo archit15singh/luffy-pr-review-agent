@@ -67,6 +67,15 @@ copy_if "$OUT_DIR/timings.json" "$TRACE_DIR/timings.json"
 copy_if "$OUT_DIR/review-${PR_NUMBER}.raw.md" "$TRACE_DIR/review.raw.md"
 copy_if "$OUT_DIR/review-${PR_NUMBER}.md" "$TRACE_DIR/review.md"
 copy_if "$OUT_DIR/hermes-${PR_NUMBER}.stderr" "$TRACE_DIR/hermes.stderr"
+copy_if "$OUT_DIR/hermes-usage.json" "$TRACE_DIR/hermes-usage.json"
+copy_if "$OUT_DIR/hermes-run.log" "$TRACE_DIR/hermes-run.log"
+
+# Full agentic loop package (prompts / steps / tool calls / usage)
+if [[ -d "$OUT_DIR/agent-loop" ]]; then
+  rm -rf "$TRACE_DIR/agent-loop"
+  cp -a "$OUT_DIR/agent-loop" "$TRACE_DIR/agent-loop"
+  log "Included agent-loop package → $TRACE_DIR/agent-loop"
+fi
 
 # Memory snapshots (never include HERMES_HOME/.env)
 if [[ -f "$HERMES_HOME/memories/MEMORY.md" ]]; then
@@ -121,13 +130,17 @@ from pathlib import Path
 
 trace_dir = Path(os.environ["TRACE_DIR"])
 files = {}
-for p in sorted(trace_dir.iterdir()):
-    if p.is_file() and p.name not in {"trace.json", "meta.json"}:
-        data = p.read_bytes()
-        files[p.name] = {
-            "bytes": len(data),
-            "sha256": hashlib.sha256(data).hexdigest(),
-        }
+for p in sorted(trace_dir.rglob("*")):
+    if not p.is_file():
+        continue
+    rel = str(p.relative_to(trace_dir))
+    if rel in {"trace.json", "meta.json"}:
+        continue
+    data = p.read_bytes()
+    files[rel] = {
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+    }
 
 meta = {
     "trace_id": os.environ["TRACE_ID"],

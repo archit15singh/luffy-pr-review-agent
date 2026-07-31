@@ -10,10 +10,24 @@ from pathlib import Path
 
 MAX_CHARS = 60_000
 
+# Core contract — keep in sync with agent/review-prompt.md
 REQUIRED_SNIPPETS = (
     "**Verdict:**",
+    "**Score:**",
     "### Summary",
     "### Blocking",
+    "### Security audit",
+    "### Tests & risk",
+)
+
+# Soft sections we try to ensure exist (repair path only)
+SOFT_SECTIONS = (
+    "### Walkthrough",
+    "### Key findings",
+    "### Suggestions",
+    "### Code suggestions",
+    "### Nits",
+    "### What I checked",
 )
 
 
@@ -36,25 +50,45 @@ def ensure_contract(text: str, pr: str) -> str:
     missing = [s for s in REQUIRED_SNIPPETS if s not in t]
     if not missing:
         body = t
+        # Append missing soft headings only if completely absent (do not invent content)
+        for sec in SOFT_SECTIONS:
+            if sec not in body:
+                # leave as-is; soft sections are guidance for the model, not hard repair
+                pass
     else:
         body = f"""## 🏴‍☠️ Luffy Review — PR #{pr}
 
 **Verdict:** COMMENT
 **Confidence:** low
+**Score:** 40/100
+**Review effort:** 2/5
 
 ### Summary
 Agent output did not match the review contract (missing: {', '.join(missing)}). Raw content preserved below.
 
+### Walkthrough
+- Contract repair only — re-run for a full structured review
+
 ### Blocking
 - None (contract repair — re-run if this looks incomplete)
 
+### Key findings
+None — normalizer fallback.
+
+### Security audit
+No
+
 ### Suggestions
 - None
+
+### Code suggestions
+None
 
 ### Nits
 - None
 
 ### Tests & risk
+- Relevant tests added/updated: unknown
 - Coverage: unknown
 - Risk: unknown
 - Rollback: n/a
@@ -68,7 +102,6 @@ Agent output did not match the review contract (missing: {', '.join(missing)}). 
 
     marker = f"<!-- luffy-review pr={pr}"
     if marker not in body:
-        # Insert marker after optional existing HTML comments or at top
         body = f"<!-- luffy-review pr={pr} -->\n{body}"
 
     if "Luffy · Hermes Agent" not in body:
@@ -92,7 +125,6 @@ def main(argv: list[str] | None = None) -> int:
 
     raw = args.input.read_text(errors="replace")
     cleaned = strip_outer_fence(raw)
-    # Enrich marker with run id if we control insertion
     final = ensure_contract(cleaned, str(args.pr))
     final = final.replace(
         f"<!-- luffy-review pr={args.pr} -->",

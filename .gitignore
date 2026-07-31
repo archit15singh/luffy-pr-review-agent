@@ -10,3 +10,5 @@ node_modules/
 .DS_Store
 *.pyc
 .pytest_cache/
+# local brand experiments (examples/luffy/branding is committed as demo)
+/branding/

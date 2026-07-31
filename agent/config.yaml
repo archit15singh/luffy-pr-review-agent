@@ -3,10 +3,14 @@
 
 model:
   provider: openrouter
-  # Override with LUFFY_MODEL / OPENROUTER_MODEL.
+  # Override with LUFFY_MODEL / OPENROUTER_MODEL (default: Claude Opus 5).
   default: anthropic/claude-opus-5
 
 terminal:
   backend: local
 
-# Memory lives under HERMES_HOME/memories — cached in Actions.
+# Verbose agent/tool logging → HERMES_HOME/logs/agent.log
+display:
+  tool_progress: verbose
+
+# Memory lives under HERMES_HOME/memories — preloaded from hub when available.
