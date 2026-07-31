@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="Luffy · C-isometric">
+
+  <defs>
+    <linearGradient id="bgC" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#06080f"/>
+      <stop offset="100%" stop-color="#0B0F19"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#bgC)"/>
+  <!-- perspective grid -->
+  <g opacity="0.12" stroke="#FF6B2C" stroke-width="1" fill="none">
+    <path d="M0,80 Q600,120 1200,80"/><path d="M0,102 Q600,142 1200,102"/><path d="M0,124 Q600,164 1200,124"/><path d="M0,146 Q600,186 1200,146"/><path d="M0,168 Q600,208 1200,168"/><path d="M0,190 Q600,230 1200,190"/><path d="M0,212 Q600,252 1200,212"/><path d="M0,234 Q600,274 1200,234"/><path d="M0,256 Q600,296 1200,256"/><path d="M0,278 Q600,318 1200,278"/><path d="M0,300 Q600,340 1200,300"/><path d="M0,322 Q600,362 1200,322"/>
+  </g>
+  
+    <polygon points="920,110 990,130 920,150 850,130" fill="#FF6B2C"/>
+    <polygon points="850,130 920,150 920,190 850,170" fill="#b3471f"/>
+    <polygon points="990,130 920,150 920,190 990,170" fill="#C41E3A"/>
+  
+    <polygon points="1000,158 1055,174 1000,190 945,174" fill="#FFD166"/>
+    <polygon points="945,174 1000,190 1000,222 945,206" fill="#b8963a"/>
+    <polygon points="1055,174 1000,190 1000,222 1055,206" fill="#8a6a20"/>
+  
+    <polygon points="840,182 888,196 840,210 792,196" fill="#3b82f6"/>
+    <polygon points="792,196 840,210 840,238 792,224" fill="#1e3a5f"/>
+    <polygon points="888,196 840,210 840,238 888,224" fill="#172554"/>
+  
+    <polygon points="1080,106 1120,118 1080,130 1040,118" fill="#C41E3A"/>
+    <polygon points="1040,118 1080,130 1080,154 1040,142" fill="#7a1528"/>
+    <polygon points="1120,118 1080,130 1080,154 1120,142" fill="#4a0e18"/>
+  <text x="64" y="120" font-family="ui-sans-serif,system-ui,sans-serif" font-size="58" font-weight="800" fill="#FFFFFF">Luffy</text>
+  <text x="64" y="170" font-family="ui-sans-serif,system-ui,sans-serif" font-size="24" fill="#FFD166">PR review control plane</text>
+  <text x="64" y="210" font-family="ui-sans-serif,system-ui,sans-serif" font-size="16" fill="#9CA3AF">trigger · sparse context · hermes loop · hub memory</text>
+  <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" fill="#FFFFFF">
+    <rect x="64" y="240" width="110" height="32" rx="8" fill="#FF6B2C" opacity="0.9"/>
+    <text x="119" y="261" text-anchor="middle">Actions</text>
+    <rect x="186" y="240" width="110" height="32" rx="8" fill="#111827" stroke="#FF6B2C" stroke-opacity="0.5"/>
+    <text x="241" y="261" text-anchor="middle" fill="#FFD166">Hermes</text>
+    <rect x="308" y="240" width="110" height="32" rx="8" fill="#111827" stroke="#C41E3A" stroke-opacity="0.5"/>
+    <text x="363" y="261" text-anchor="middle" fill="#9CA3AF">OpenRouter</text>
+  </g>
+
+</svg>

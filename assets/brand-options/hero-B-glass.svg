@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="Luffy · B-glass">
+
+  <defs>
+    <linearGradient id="bgB" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070A10"/>
+      <stop offset="55%" stop-color="#0B0F19"/>
+      <stop offset="100%" stop-color="#1a0a0c"/>
+    </linearGradient>
+    <linearGradient id="glassB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.03"/>
+    </linearGradient>
+    <linearGradient id="orbB" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF6B2C"/>
+      <stop offset="50%" stop-color="#C41E3A"/>
+      <stop offset="100%" stop-color="#5c1020"/>
+    </linearGradient>
+    <radialGradient id="specB" cx="35%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="40%" stop-color="#FF6B2C" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#C41E3A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blurB" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="320" fill="url(#bgB)"/>
+  <circle cx="980" cy="40" r="160" fill="url(#orbB)" opacity="0.55" filter="url(#blurB)"/>
+  <circle cx="1040" cy="90" r="90" fill="url(#specB)"/>
+  <circle cx="160" cy="280" r="100" fill="#FFD166" opacity="0.08" filter="url(#blurB)"/>
+  <!-- glass card -->
+  <rect x="48" y="48" width="620" height="224" rx="24" fill="url(#glassB)" stroke="#ffffff" stroke-opacity="0.12"/>
+  <rect x="48" y="48" width="620" height="1" rx="1" fill="#ffffff" opacity="0.25"/>
+  <text x="80" y="130" font-family="ui-sans-serif,system-ui,sans-serif" font-size="56" font-weight="800" fill="#FFFFFF">Luffy</text>
+  <text x="80" y="180" font-family="ui-sans-serif,system-ui,sans-serif" font-size="22" fill="#FFD166">Comment-triggered PR review agent</text>
+  <text x="80" y="220" font-family="ui-sans-serif,system-ui,sans-serif" font-size="16" fill="#9CA3AF">Hermes · OpenRouter · hub memory · traces</text>
+  <rect x="80" y="240" width="96" height="6" rx="3" fill="#FF6B2C"/>
+  <!-- floating glass chips -->
+  <rect x="760" y="90" width="200" height="56" rx="14" fill="url(#glassB)" stroke="#ffffff" stroke-opacity="0.1"/>
+  <text x="860" y="125" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="15" fill="#FFFFFF" opacity="0.9">@luffy review</text>
+  <rect x="820" y="170" width="240" height="56" rx="14" fill="url(#glassB)" stroke="#FF6B2C" stroke-opacity="0.35"/>
+  <text x="940" y="205" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="15" fill="#FFD166">score · tools · memory</text>
+
+</svg>

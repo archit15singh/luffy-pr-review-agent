@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="Luffy · E-volumetric">
+
+  <rect width="1200" height="320" fill="#05070c"/>
+  <rect width="1200" height="320" fill="#0B0F19" opacity="0.9"/>
+  
+  <defs>
+    <radialGradient id="sph1" cx="32%" cy="28%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="18%" stop-color="#FF6B2C"/>
+      <stop offset="55%" stop-color="#C41E3A"/>
+      <stop offset="100%" stop-color="#1a0508"/>
+    </radialGradient>
+    <radialGradient id="sh1" cx="50%" cy="100%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="980" cy="243.5" rx="93.5" ry="19.8" fill="url(#sh1)"/>
+  <circle cx="980" cy="150" r="110" fill="url(#sph1)"/>
+  <circle cx="949.2" cy="114.8" r="13.2" fill="#ffffff" opacity="0.35"/>
+
+  
+  <defs>
+    <radialGradient id="sph2" cx="32%" cy="28%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="18%" stop-color="#FF6B2C"/>
+      <stop offset="55%" stop-color="#C41E3A"/>
+      <stop offset="100%" stop-color="#1a0508"/>
+    </radialGradient>
+    <radialGradient id="sh2" cx="50%" cy="100%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="820" cy="250.8" rx="40.8" ry="8.64" fill="url(#sh2)"/>
+  <circle cx="820" cy="210" r="48" fill="url(#sph2)"/>
+  <circle cx="806.56" cy="194.64" r="5.76" fill="#ffffff" opacity="0.35"/>
+
+  
+  <defs>
+    <radialGradient id="sph3" cx="32%" cy="28%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="18%" stop-color="#FF6B2C"/>
+      <stop offset="55%" stop-color="#C41E3A"/>
+      <stop offset="100%" stop-color="#1a0508"/>
+    </radialGradient>
+    <radialGradient id="sh3" cx="50%" cy="100%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="1100" cy="120.6" rx="30.599999999999998" ry="6.4799999999999995" fill="url(#sh3)"/>
+  <circle cx="1100" cy="90" r="36" fill="url(#sph3)"/>
+  <circle cx="1089.92" cy="78.48" r="4.32" fill="#ffffff" opacity="0.35"/>
+
+  <text x="64" y="125" font-family="ui-sans-serif,system-ui,sans-serif" font-size="62" font-weight="800" fill="#FFFFFF">Luffy</text>
+  <text x="64" y="180" font-family="ui-sans-serif,system-ui,sans-serif" font-size="26" fill="#FFD166">Comment-triggered PR review agent</text>
+  <text x="64" y="225" font-family="ui-sans-serif,system-ui,sans-serif" font-size="16" fill="#9CA3AF">Hermes Agent · OpenRouter · hub memory · redacted traces</text>
+  <g font-family="ui-monospace,monospace" font-size="13" fill="#FF6B2C">
+    <text x="64" y="270">@luffy review this pr</text>
+  </g>
+
+</svg>

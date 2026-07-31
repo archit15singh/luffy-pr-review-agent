@@ -1,0 +1,42 @@
+[
+  {
+    "id": "A-baseline",
+    "name": "Baseline (current style)",
+    "file": "hero-A-baseline.svg"
+  },
+  {
+    "id": "B-glass",
+    "name": "Glass panels + orbs",
+    "file": "hero-B-glass.svg"
+  },
+  {
+    "id": "C-isometric",
+    "name": "Isometric control plane",
+    "file": "hero-C-isometric.svg"
+  },
+  {
+    "id": "D-mesh",
+    "name": "Neural mesh / agent graph",
+    "file": "hero-D-mesh.svg"
+  },
+  {
+    "id": "E-volumetric",
+    "name": "Volumetric orbs (fake 3D)",
+    "file": "hero-E-volumetric.svg"
+  },
+  {
+    "id": "F-cyber",
+    "name": "Cyber perspective grid",
+    "file": "hero-F-cyber.svg"
+  },
+  {
+    "id": "G-mark",
+    "name": "Mark + extruded type",
+    "file": "hero-G-mark.svg"
+  },
+  {
+    "id": "H-cinematic",
+    "name": "Cinematic split + slabs",
+    "file": "hero-H-cinematic.svg"
+  }
+]

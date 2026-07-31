@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Luffy · Three.js artifact options</title>
+  <style>
+    :root {
+      --ink: #0B0F19;
+      --surface: #111827;
+      --flame: #FF6B2C;
+      --crimson: #C41E3A;
+      --gold: #FFD166;
+      --muted: #9CA3AF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: #e5e7eb;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    header {
+      padding: 20px 24px 8px;
+      border-bottom: 1px solid #1f2937;
+      position: sticky;
+      top: 0;
+      background: rgba(11,15,25,0.92);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+    h1 { margin: 0 0 6px; font-size: 22px; color: var(--gold); }
+    p { margin: 0 0 10px; color: var(--muted); font-size: 14px; max-width: 70ch; line-height: 1.45; }
+    .hint { font-size: 13px; color: var(--flame); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+      padding: 20px 24px 48px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card h2 {
+      margin: 0;
+      padding: 12px 14px 4px;
+      font-size: 15px;
+      color: var(--flame);
+      letter-spacing: 0.02em;
+    }
+    .card .desc {
+      padding: 0 14px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 2.6em;
+    }
+    .stage {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #05070c;
+      display: block;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      padding: 10px 14px 14px;
+    }
+    button {
+      appearance: none;
+      border: 1px solid #374151;
+      background: #0B0F19;
+      color: #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--flame); color: var(--gold); }
+    button.primary { background: linear-gradient(135deg, var(--flame), var(--crimson)); border: none; color: white; font-weight: 600; }
+    .rec {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255,107,44,0.15);
+      color: var(--gold);
+      border: 1px solid rgba(255,209,102,0.3);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Luffy artifacts (Three.js) — not banners</h1>
+    <p>
+      Square product marks / devices / seals. Drag to orbit. Click <strong>Save PNG</strong> to download.
+      These are meant as README centerpiece artifacts (like a stamp or object), not wide marketing strips.
+    </p>
+    <p class="hint">My ranking once you’ve looked: 3 seal · 1 monogram · 5 crystal · then 2 orbital. Tell me the number (1–8).</p>
+  </header>
+  <div class="grid" id="grid"></div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+    const FLAME = 0xff6b2c;
+    const CRIMSON = 0xc41e3a;
+    const GOLD = 0xffd166;
+    const INK = 0x0b0f19;
+    const SURFACE = 0x111827;
+
+    const ARTIFACTS = [
+      {
+        id: 1,
+        key: "monogram-L",
+        title: "1 · Monogram L (extruded seal)",
+        desc: "Classic 3D brand mark — extruded L on a dark plinth with rim light.",
+        recommend: true,
+        build(scene) {
+          const group = new THREE.Group();
+          // plinth
+          const base = new THREE.Mesh(
+            new RoundedBoxGeometry(2.2, 0.35, 2.2, 4, 0.08),
+            new THREE.MeshStandardMaterial({ color: SURFACE, metalness: 0.6, roughness: 0.35 })
+          );
+          base.position.y = -0.9;
+          base.castShadow = true;
+          group.add(base);
+
+          // ring
+          const torus = new THREE.Mesh(
+            new THREE.TorusGeometry(1.05, 0.08, 24, 96),
+            new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.85, roughness: 0.25, emissive: GOLD, emissiveIntensity: 0.15 })
+          );
+          torus.rotation.x = Math.PI / 2;
+          torus.position.y = -0.7;
+          group.add(torus);
+
+          // extruded L via boxes
+          const mat = new THREE.MeshPhysicalMaterial({
+            color: FLAME,
+            metalness: 0.35,
+            roughness: 0.25,
+            clearcoat: 0.8,
+            clearcoatRoughness: 0.2,
+            emissive: CRIMSON,
+            emissiveIntensity: 0.12,
+          });
+          const stem = new THREE.Mesh(new RoundedBoxGeometry(0.45, 1.8, 0.45, 3, 0.06), mat);
+          stem.position.set(-0.35, 0.15, 0);
+          const foot = new THREE.Mesh(new RoundedBoxGeometry(1.15, 0.4, 0.45, 3, 0.06), mat);
+          foot.position.set(0.05, -0.55, 0);
+          group.add(stem, foot);
+          scene.add(group);
+          return group;
+        },
+      },
+      {
+        id: 2,
+        key: "orbital-core",
+        title: "2 · Orbital core",
+        desc: "Glowing nucleus + orbit rings — agent / runtime energy.",
+        build(scene) {
+          const group = new THREE.Group();
+          const core = new THREE.Mesh(
+            new THREE.SphereGeometry(0.55, 48, 48),
+            new THREE.MeshPhysicalMaterial({
+              color: FLAME,
+              metalness: 0.2,
+              roughness: 0.15,
+              emissive: CRIMSON,
+              emissiveIntensity: 0.55,
+              clearcoat: 1,
+            })
+          );
+          group.add(core);
+          const shell = new THREE.Mesh(
+            new THREE.SphereGeometry(0.72, 32, 32),
+            new THREE.MeshPhysicalMaterial({
+              color: GOLD,
+              transparent: true,
+              opacity: 0.12,
+              roughness: 0,
+              metalness: 0,
+              side: THREE.DoubleSide,
+            })
+          );
+          group.add(shell);
+          for (const [rx, ry, color] of [
+            [0.4, 0.2, GOLD],
+            [1.1, 0.6, FLAME],
+            [0.2, 1.3, CRIMSON],
+          ]) {
+            const ring = new THREE.Mesh(
+              new THREE.TorusGeometry(1.15, 0.035, 16, 100),
+              new THREE.MeshStandardMaterial({ color, metalness: 0.8, roughness: 0.2, emissive: color, emissiveIntensity: 0.2 })
+            );
+            ring.rotation.x = rx;
+            ring.rotation.y = ry;
+            group.add(ring);
+          }
+          // tiny satellites
+          for (let i = 0; i < 6; i++) {
+            const a = (i / 6) * Math.PI * 2;
+            const s = new THREE.Mesh(
+              new THREE.SphereGeometry(0.08, 16, 16),
+              new THREE.MeshStandardMaterial({ color: GOLD, emissive: GOLD, emissiveIntensity: 0.4 })
+            );
+            s.position.set(Math.cos(a) * 1.35, Math.sin(a * 1.3) * 0.25, Math.sin(a) * 1.35);
+            group.add(s);
+          }
+          scene.add(group);
+          return group;
+        },
+      },
+      {
+        id: 3,
+        key: "control-seal",
+        title: "3 · Control seal (recommended)",
+        desc: "Hex seal + raised prism — “official artifact” stamp for a control plane product.",
+        recommend: true,
+        build(scene) {
+          const group = new THREE.Group();
+          const hex = new THREE.Mesh(
+            new THREE.CylinderGeometry(1.35, 1.35, 0.28, 6),
+            new THREE.MeshStandardMaterial({ color: SURFACE, metalness: 0.7, roughness: 0.3 })
+          );
+          hex.position.y = -0.55;
+          group.add(hex);
+          const rim = new THREE.Mesh(
+            new THREE.CylinderGeometry(1.42, 1.42, 0.08, 6),
+            new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.9, roughness: 0.2, emissive: GOLD, emissiveIntensity: 0.1 })
+          );
+          rim.position.y = -0.38;
+          group.add(rim);
+          // inner flame prism
+          const prism = new THREE.Mesh(
+            new THREE.OctahedronGeometry(0.85, 0),
+            new THREE.MeshPhysicalMaterial({
+              color: FLAME,
+              metalness: 0.45,
+              roughness: 0.18,
+              clearcoat: 0.9,
+              emissive: CRIMSON,
+              emissiveIntensity: 0.25,
+            })
+          );
+          prism.position.y = 0.25;
+          prism.rotation.y = Math.PI / 6;
+          group.add(prism);
+          // floating bar (comment trigger cue)
+          const bar = new THREE.Mesh(
+            new RoundedBoxGeometry(1.6, 0.18, 0.35, 2, 0.05),
+            new THREE.MeshStandardMaterial({ color: FLAME, metalness: 0.4, roughness: 0.35, emissive: FLAME, emissiveIntensity: 0.15 })
+          );
+          bar.position.set(0, 1.15, 0);
+          group.add(bar);
+          scene.add(group);
+          return group;
+        },
+      },
+      {
+        id: 4,
+        key: "stacked-planes",
+        title: "4 · Stacked data planes",
+        desc: "Floating glass slabs — pipeline / layers metaphor.",
+        build(scene) {
+          const group = new THREE.Group();
+          const colors = [FLAME, CRIMSON, GOLD, 0x3b82f6];
+          for (let i = 0; i < 4; i++) {
+            const slab = new THREE.Mesh(
+              new RoundedBoxGeometry(2.4 - i * 0.15, 0.12, 1.6 - i * 0.1, 2, 0.04),
+              new THREE.MeshPhysicalMaterial({
+                color: colors[i],
+                metalness: 0.3,
+                roughness: 0.25,
+                transparent: true,
+                opacity: 0.85,
+                transmission: 0.15,
+                thickness: 0.4,
+              })
+            );
+            slab.position.y = -0.6 + i * 0.45;
+            slab.rotation.y = (i - 1.5) * 0.12;
+            slab.rotation.x = 0.15;
+            group.add(slab);
+          }
+          scene.add(group);
+          return group;
+        },
+      },
+      {
+        id: 5,
+        key: "flame-crystal",
+        title: "5 · Flame crystal",
+        desc: "Faceted gem — premium collectible object, not UI chrome.",
+        recommend: true,
+        build(scene) {
+          const group = new THREE.Group();
+          const geo = new THREE.IcosahedronGeometry(1.1, 1);
+          const mat = new THREE.MeshPhysicalMaterial({
+            color: FLAME,
+            metalness: 0.15,
+            roughness: 0.08,
+            transmission: 0.45,
+            thickness: 1.2,
+            ior: 1.5,
+            clearcoat: 1,
+            emissive: CRIMSON,
+            emissiveIntensity: 0.2,
+          });
+          const crystal = new THREE.Mesh(geo, mat);
+          group.add(crystal);
+          const wire = new THREE.LineSegments(
+            new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(1.12, 1)),
+            new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.25 })
+          );
+          group.add(wire);
+          const ped = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.7, 0.95, 0.25, 32),
+            new THREE.MeshStandardMaterial({ color: SURFACE, metalness: 0.7, roughness: 0.35 })
+          );
+          ped.position.y = -1.2;
+          group.add(ped);
+          scene.add(group);
+          return group;
+        },
+      },
+      {
+        id: 6,
+        key: "knot-loop",
+        title: "6 · Torus knot (loop)",
+        desc: "Abstract agentic loop — continuous path, tech sculpture.",
+        build(scene) {
+          const group = new THREE.Group();
+          const knot = new THREE.Mesh(
+            new THREE.TorusKnotGeometry(0.75, 0.22, 180, 24),
+            new THREE.MeshPhysicalMaterial({
+              color: FLAME,
+              metalness: 0.7,
+              roughness: 0.2,
+              clearcoat: 0.8,
+              emissive: CRIMSON,
+              emissiveIntensity: 0.15,
+            })
+          );
+          group.add(knot);
+          const disc = new THREE.Mesh(
+            new THREE.CircleGeometry(1.6, 64),
+            new THREE.MeshStandardMaterial({ color: INK, metalness: 0.5, roughness: 0.5, side: THREE.DoubleSide })
+          );
+          disc.rotation.x = -Math.PI / 2;
+          disc.position.y = -1.15;
+          group.add(disc);
+          scene.add(group);
+          return group;
+        },
+      },
+      {
+        id: 7,
+        key: "chip-device",
+        title: "7 · Review device / chip",
+        desc: "Hardware-ish artifact — PCB plate + glowing die.",
+        build(scene) {
+          const group = new THREE.Group();
+          const board = new THREE.Mesh(
+            new RoundedBoxGeometry(2.4, 0.12, 2.4, 2, 0.06),
+            new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.4, roughness: 0.45 })
+          );
+          group.add(board);
+          // traces
+          for (let i = 0; i < 12; i++) {
+            const t = new THREE.Mesh(
+              new THREE.BoxGeometry(0.04, 0.02, 0.8 + Math.random() * 0.6),
+              new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.9, roughness: 0.2, emissive: GOLD, emissiveIntensity: 0.15 })
+            );
+            t.position.set(-0.9 + (i % 4) * 0.55, 0.08, -0.6 + Math.floor(i / 4) * 0.5);
+            t.rotation.y = (i % 2) * 0.4;
+            group.add(t);
+          }
+          const die = new THREE.Mesh(
+            new RoundedBoxGeometry(0.7, 0.22, 0.7, 2, 0.04),
+            new THREE.MeshPhysicalMaterial({
+              color: FLAME,
+              metalness: 0.5,
+              roughness: 0.2,
+              emissive: CRIMSON,
+              emissiveIntensity: 0.35,
+              clearcoat: 0.7,
+            })
+          );
+          die.position.y = 0.22;
+          group.add(die);
+          board.rotation.x = -0.35;
+          board.rotation.z = 0.15;
+          die.rotation.copy(board.rotation);
+          group.children.forEach((c, i) => {
+            if (i > 0 && i < 13) c.rotation.x = board.rotation.x;
+          });
+          scene.add(group);
+          return group;
+        },
+      },
+      {
+        id: 8,
+        key: "anchor-ring",
+        title: "8 · Anchor ring (crew mark)",
+        desc: "Abstract anchor in a ring — pirate-adjacent without OP IP.",
+        build(scene) {
+          const group = new THREE.Group();
+          const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(1.2, 0.12, 24, 80),
+            new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.85, roughness: 0.25, emissive: GOLD, emissiveIntensity: 0.12 })
+          );
+          ring.rotation.x = Math.PI / 2.5;
+          group.add(ring);
+          const mat = new THREE.MeshPhysicalMaterial({
+            color: FLAME,
+            metalness: 0.4,
+            roughness: 0.25,
+            clearcoat: 0.6,
+            emissive: CRIMSON,
+            emissiveIntensity: 0.15,
+          });
+          const shaft = new THREE.Mesh(new RoundedBoxGeometry(0.28, 1.7, 0.28, 2, 0.05), mat);
+          const arms = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.12, 12, 40, Math.PI), mat);
+          arms.rotation.x = Math.PI;
+          arms.position.y = -0.75;
+          const stock = new THREE.Mesh(new RoundedBoxGeometry(0.95, 0.2, 0.2, 2, 0.04), mat);
+          stock.position.y = 0.55;
+          const eye = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.07, 12, 24), mat);
+          eye.position.y = 0.95;
+          group.add(shaft, arms, stock, eye);
+          scene.add(group);
+          return group;
+        },
+      },
+    ];
+
+    const grid = document.getElementById("grid");
+
+    function makeScene(canvas, buildFn) {
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: false,
+        preserveDrawingBuffer: true,
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(canvas.clientWidth, canvas.clientWidth, false);
+      renderer.shadowMap.enabled = true;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x05070c);
+
+      const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+      camera.position.set(3.2, 2.2, 4.2);
+
+      const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = true;
+      controls.enablePan = false;
+      controls.minDistance = 2.5;
+      controls.maxDistance = 8;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.9;
+
+      // lights — product shot style
+      scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+      const key = new THREE.DirectionalLight(0xffe0c8, 1.4);
+      key.position.set(4, 6, 3);
+      key.castShadow = true;
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(FLAME, 0.85);
+      rim.position.set(-4, 2, -3);
+      scene.add(rim);
+      const fill = new THREE.PointLight(GOLD, 0.6, 20);
+      fill.position.set(0, 2, 3);
+      scene.add(fill);
+
+      // floor fade
+      const floor = new THREE.Mesh(
+        new THREE.CircleGeometry(3.5, 64),
+        new THREE.MeshStandardMaterial({ color: 0x0a0c12, metalness: 0.8, roughness: 0.55 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -1.35;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const root = buildFn(scene);
+
+      let raf;
+      function tick() {
+        raf = requestAnimationFrame(tick);
+        if (root) root.rotation.y += 0.002;
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      tick();
+
+      const ro = new ResizeObserver(() => {
+        const s = canvas.clientWidth;
+        renderer.setSize(s, s, false);
+        camera.aspect = 1;
+        camera.updateProjectionMatrix();
+      });
+      ro.observe(canvas.parentElement);
+
+      return {
+        controls,
+        savePng(name) {
+          const was = controls.autoRotate;
+          controls.autoRotate = false;
+          renderer.render(scene, camera);
+          const a = document.createElement("a");
+          a.download = `${name}.png`;
+          a.href = renderer.domElement.toDataURL("image/png");
+          a.click();
+          controls.autoRotate = was;
+        },
+        dispose() {
+          cancelAnimationFrame(raf);
+          ro.disconnect();
+          renderer.dispose();
+        },
+      };
+    }
+
+    for (const art of ARTIFACTS) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h2>${art.title}${art.recommend ? '<span class="rec">rec</span>' : ""}</h2>
+        <div class="desc">${art.desc}</div>
+        <canvas class="stage" id="c-${art.id}"></canvas>
+        <div class="actions">
+          <button class="primary" data-save="${art.id}">Save PNG</button>
+          <button data-stop="${art.id}">Toggle spin</button>
+        </div>
+      `;
+      grid.appendChild(card);
+      const canvas = card.querySelector("canvas");
+      requestAnimationFrame(() => {
+        const api = makeScene(canvas, art.build);
+        card.querySelector(`[data-save="${art.id}"]`).onclick = () =>
+          api.savePng(`luffy-artifact-${art.id}-${art.key}`);
+        card.querySelector(`[data-stop="${art.id}"]`).onclick = (e) => {
+          api.controls.autoRotate = !api.controls.autoRotate;
+          e.target.textContent = api.controls.autoRotate ? "Toggle spin" : "Spin: off";
+        };
+      });
+    }
+  </script>
+</body>
+</html>

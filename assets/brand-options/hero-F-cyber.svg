@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="Luffy · F-cyber">
+
+  <defs>
+    <linearGradient id="fadeF" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B0F19"/>
+      <stop offset="100%" stop-color="#1a0808"/>
+    </linearGradient>
+    <linearGradient id="neonF" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FF6B2C"/>
+      <stop offset="100%" stop-color="#FFD166"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#fadeF)"/>
+  <g><line x1="0" y1="100" x2="1200" y2="100" stroke="#FF6B2C" stroke-opacity="0.05" stroke-width="1"/>
+<line x1="0" y1="100.97777777777777" x2="1200" y2="100.97777777777777" stroke="#FF6B2C" stroke-opacity="0.058" stroke-width="1"/>
+<line x1="0" y1="103.91111111111111" x2="1200" y2="103.91111111111111" stroke="#FF6B2C" stroke-opacity="0.066" stroke-width="1"/>
+<line x1="0" y1="108.8" x2="1200" y2="108.8" stroke="#FF6B2C" stroke-opacity="0.07400000000000001" stroke-width="1"/>
+<line x1="0" y1="115.64444444444445" x2="1200" y2="115.64444444444445" stroke="#FF6B2C" stroke-opacity="0.082" stroke-width="1"/>
+<line x1="0" y1="124.44444444444444" x2="1200" y2="124.44444444444444" stroke="#FF6B2C" stroke-opacity="0.09" stroke-width="1"/>
+<line x1="0" y1="135.20000000000002" x2="1200" y2="135.20000000000002" stroke="#FF6B2C" stroke-opacity="0.098" stroke-width="1"/>
+<line x1="0" y1="147.9111111111111" x2="1200" y2="147.9111111111111" stroke="#FF6B2C" stroke-opacity="0.10600000000000001" stroke-width="1"/>
+<line x1="0" y1="162.57777777777778" x2="1200" y2="162.57777777777778" stroke="#FF6B2C" stroke-opacity="0.114" stroke-width="1"/>
+<line x1="0" y1="179.2" x2="1200" y2="179.2" stroke="#FF6B2C" stroke-opacity="0.122" stroke-width="1"/>
+<line x1="0" y1="197.77777777777777" x2="1200" y2="197.77777777777777" stroke="#FF6B2C" stroke-opacity="0.13" stroke-width="1"/>
+<line x1="0" y1="218.31111111111107" x2="1200" y2="218.31111111111107" stroke="#FF6B2C" stroke-opacity="0.138" stroke-width="1"/>
+<line x1="0" y1="240.80000000000004" x2="1200" y2="240.80000000000004" stroke="#FF6B2C" stroke-opacity="0.14600000000000002" stroke-width="1"/>
+<line x1="0" y1="265.24444444444447" x2="1200" y2="265.24444444444447" stroke="#FF6B2C" stroke-opacity="0.154" stroke-width="1"/>
+<line x1="0" y1="291.64444444444445" x2="1200" y2="291.64444444444445" stroke="#FF6B2C" stroke-opacity="0.162" stroke-width="1"/>
+<line x1="0" y1="320" x2="1200" y2="320" stroke="#FF6B2C" stroke-opacity="0.16999999999999998" stroke-width="1"/>
+<line x1="600" y1="80" x2="-40" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="40" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="120" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="200" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="280" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="360" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="440" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="520" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="600" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="680" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="760" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="840" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="920" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="1000" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="1080" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="1160" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/>
+<line x1="600" y1="80" x2="1240" y2="320" stroke="#C41E3A" stroke-opacity="0.12" stroke-width="1"/></g>
+  <rect x="0" y="0" width="1200" height="320" fill="url(#fadeF)" opacity="0.35"/>
+  <text x="600" y="130" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="68" font-weight="900" fill="#FFFFFF">LUFFY</text>
+  <text x="600" y="175" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="20" fill="#FFD166">PR REVIEW CONTROL PLANE</text>
+  <rect x="480" y="200" width="240" height="3" fill="url(#neonF)"/>
+  <text x="600" y="245" text-anchor="middle" font-family="ui-monospace,monospace" font-size="14" fill="#9CA3AF">hermes · opus · traces · memory</text>
+
+</svg>
