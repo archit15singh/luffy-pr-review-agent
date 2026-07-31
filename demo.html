@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Luffy — Live Trace Demo · archit15singh/odoo PR #3</title>
+<meta name="description" content="Luffy PR review agent — captured Opus 5 agentic loop on a real Odoo XML fix. REQUEST CHANGES, 42/100, 10 API calls, $0.59. The receipt, not the pitch." />
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Alpine for tiny interactions -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+  :root{ --ink:#0B0F19; --flame:#FF6B2C; --crimson:#C41E3A; --gold:#FFD166; --panel:#11141f; --line:#232a3b; }
+  html,body{ background:var(--ink); color:#e7ecf3; font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto;}
+  .font-mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .panel{ background:var(--panel); border:1px solid var(--line); }
+  .chip{ border:1px solid var(--line); }
+  .flame{ color:var(--flame); } .crimson{ color:var(--crimson); } .gold{ color:var(--gold); }
+  .bg-flame{ background:var(--flame); } .bg-crimson{ background:var(--crimson); } .bg-gold{ background:var(--gold); }
+  .glow{ box-shadow:0 0 0 1px var(--flame), 0 0 22px -6px var(--flame); }
+  .tab-active{ color:var(--ink); background:var(--flame); border-color:var(--flame); }
+  ::selection{ background:var(--flame); color:var(--ink); }
+  /* score gauge */
+  .gauge{ background:conic-gradient(var(--crimson) 0deg 151deg, #2b3247 151deg 360deg); }
+  .scrollbar::-webkit-scrollbar{ height:8px; width:8px;} .scrollbar::-webkit-scrollbar-thumb{ background:#2b3247; border-radius:4px;}
+  details>summary{ list-style:none; } details>summary::-webkit-details-marker{ display:none;}
+  .pulse{ animation:p 2s infinite;} @keyframes p{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body class="min-h-screen" x-data="luffy()">
+<!-- ===================== TOP BAR ===================== -->
+<header class="sticky top-0 z-30 panel border-b-0 backdrop-blur" style="background:rgba(11,15,25,.86)">
+  <div class="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3">
+    <span class="text-2xl">🏴‍☠️</span>
+    <span class="font-bold tracking-tight text-lg">Luffy</span>
+    <span class="chip px-2 py-0.5 text-xs rounded gold">Live trace demo</span>
+    <span class="ml-auto flex items-center gap-3 text-xs">
+      <span class="hidden sm:flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 pulse"></span>completed</span>
+      <a href="https://github.com/archit15singh/luffy-pr-review-agent" target="_blank" rel="noopener" class="chip rounded px-2.5 py-1 hover:border-orange-500 hover:text-orange-300">repo ↗</a>
+    </span>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-5">
+  <!-- ===================== TRIGGER / PR HEADER ===================== -->
+  <section class="panel rounded-lg overflow-hidden">
+    <div class="px-4 sm:px-5 py-3 border-b border-[#232a3b] flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+      <span class="font-mono flame">archit15singh/odoo</span>
+      <span class="chip rounded px-2 py-0.5 text-xs">#3</span>
+      <span class="text-slate-300">[FIX] tools: strip non-XML characters at Unicode level (#271153)</span>
+      <span class="ml-auto text-xs text-slate-500 font-mono">run 30574256524 · 19.0 ← fix/271153-xml-control-chars</span>
+    </div>
+    <div class="px-4 sm:px-5 py-3 flex items-start gap-3">
+      <div class="w-8 h-8 rounded-full bg-[#232a3b] grid place-items-center text-sm shrink-0">@</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm">
+          <span class="font-semibold">archit15singh</span>
+          <span class="text-slate-500"> commented · <span class="flame font-mono">@luffy review this pr</span></span>
+        </div>
+        <div class="mt-1 text-xs text-slate-500">Trigger captured · <a class="underline hover:text-orange-300" href="https://github.com/archit15singh/odoo/pull/3" target="_blank" rel="noopener">open the PR ↗</a></div>
+      </div>
+      <div class="flex gap-2 text-xl shrink-0">
+        <span title="eyes reaction while running">👀</span>
+        <span class="text-emerald-400" title="passed on completion">✅</span>
+      </div>
+    </div>
+    <!-- metric strip -->
+    <div class="grid grid-cols-2 sm:grid-cols-5 divide-x divide-[#232a3b] border-t border-[#232a3b] text-center">
+      <div class="py-3"><div class="text-[10px] uppercase tracking-wider text-slate-500">model</div><div class="font-mono text-sm mt-0.5 break-words">claude-opus-5</div></div>
+      <div class="py-3"><div class="text-[10px] uppercase tracking-wider text-slate-500">api calls</div><div class="text-xl mt-0.5">10</div></div>
+      <div class="py-3"><div class="text-[10px] uppercase tracking-wider text-slate-500">tool turns</div><div class="text-xl mt-0.5">9</div></div>
+      <div class="py-3"><div class="text-[10px] uppercase tracking-wider text-slate-500">wall time</div><div class="text-xl mt-0.5">253<span class="text-xs text-slate-500">s</span></div></div>
+      <div class="py-3"><div class="text-[10px] uppercase tracking-wider text-slate-500">cost</div><div class="text-xl mt-0.5 gold">$0.59</div></div>
+    </div>
+  </section>
+
+  <!-- ===================== TABS ===================== -->
+  <nav class="mt-4 flex flex-wrap gap-2">
+    <template x-for="t in tabs" :key="t.id">
+      <button @click="tab=t.id"
+        :class="tab===t.id ? 'tab-active glow' : 'panel hover:text-orange-300'"
+        class="px-3 py-1.5 text-sm rounded-md border transition font-medium" x-text="t.label"></button>
+    </template>
+  </nav>
+
+  <!-- ===== TAB: PIPELINE ===== -->
+  <section x-show="tab==='pipeline'" class="mt-3 grid lg:grid-cols-3 gap-3">
+    <div class="panel rounded-lg p-4 lg:col-span-2">
+      <h2 class="text-sm font-semibold mb-3 flame">Outer loop · 7 deterministic stages</h2>
+      <div class="space-y-1.5">
+        <template x-for="(s,i) in stages" :key="s.name">
+          <div class="flex items-center gap-2 text-sm font-mono">
+            <span class="w-5 text-slate-500" x-text="(i+1)"></span>
+            <span class="w-44 truncate" x-text="s.name" :class="s.hot && 'text-orange-300'"></span>
+            <span class="flex-1 text-xs text-slate-600">─</span>
+            <span class="text-xs text-slate-400" x-text="s.sec===0 ? '0s' : s.sec+'s'"></span>
+            <span class="w-32 h-1.5 rounded-full bg-[#232a3b] overflow-hidden">
+              <span class="block h-full bg-flame" :style="'width:'+s.pct+'%'"></span>
+            </span>
+            <span class="w-5 text-center" :class="s.exit===0 ? 'text-emerald-400' : 'text-rose-400'">✓</span>
+          </div>
+        </template>
+      </div>
+      <p class="text-xs text-slate-500 mt-3">Boring on purpose. 251 of the 253s live in the Hermes stage — the model — the rest is shell glue even when the model fails.</p>
+    </div>
+    <div class="panel rounded-lg p-4">
+      <h2 class="text-sm font-semibold mb-3 flame">Hub memory path</h2>
+      <pre class="font-mono text-[11px] leading-relaxed text-slate-300 whitespace-pre-wrap">memory/repos/
+  archit15singh--odoo/
+    MEMORY.md
+    latest.json
+    runs/pr3-run30574256524-a1/
+      meta.json   review.md
+      summary.md</pre>
+      <p class="text-xs text-slate-500 mt-3">Next review preloads <span class="font-mono gold">MEMORY.md</span> from the hub before the model runs.</p>
+    </div>
+  </section>
+
+  <!-- ===== TAB: AGENT LOOP ===== -->
+  <section x-show="tab==='loop'" class="mt-3 panel rounded-lg p-4">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-semibold flame">Inner loop · Hermes + tools · 10 captured turns</h2>
+      <span class="font-mono text-[11px] text-slate-500">session <span class="gold">20260730_191954_63f003</span></span>
+    </div>
+    <div class="relative pl-5 border-l border-[#232a3b] space-y-3 ml-1">
+      <template x-for="(step,i) in loop" :key="i">
+        <div class="relative">
+          <span class="absolute -left-[1.42rem] top-1 w-3 h-3 rounded-full" :class="step.kind==='tool' ? 'bg-orange-500' : (step.kind==='assistant' ? 'bg-amber-300' : 'bg-slate-500')"></span>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="chip rounded px-1.5 py-0.5 font-mono" :class="step.kind==='tool' ? 'text-orange-300' : (step.kind==='assistant' ? 'text-amber-300' : 'text-slate-400')" x-text="step.kind"></span>
+            <span class="text-slate-500">turn <span x-text="i"></span></span>
+            <span class="font-semibold text-slate-200" x-text="step.title"></span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1 ml-1" x-text="step.desc"></p>
+          <template x-if="step.out">
+            <pre class="font-mono text-[11px] mt-1.5 ml-1 p-2.5 rounded panel scrollbar overflow-x-auto text-slate-300" x-text="step.out"></pre>
+          </template>
+        </div>
+      </template>
+    </div>
+    <div class="mt-3 text-xs">
+      <a class="underline gold hover:text-orange-300" href="docs/showcase/e2e-odoo-pr3-opus5-agentic-loop/agent-loop/agent-loop.md" target="_blank">Full agent-loop.md (every tool arg) ↗</a>
+    </div>
+  </section>
+
+  <!-- ===== TAB: REVIEW ===== -->
+  <section x-show="tab==='review'" class="mt-3 space-y-3">
+    <div class="panel rounded-lg p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="gauge w-20 h-20 rounded-full grid place-items-center shrink-0">
+          <div class="w-16 h-16 rounded-full bg-[#11141f] grid place-items-center">
+            <div class="text-center leading-none">
+              <div class="text-xl crimson font-bold">42</div>
+              <div class="text-[9px] text-slate-500">/100</div>
+            </div>
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-2xl font-bold flex items-center gap-2">🏴‍☠️ Luffy Review <span class="chip rounded crimson text-sm font-mono px-2 py-0.5">REQUEST CHANGES</span></div>
+          <div class="text-sm text-slate-400 mt-1">PR #3 · confidence <span class="text-slate-200 font-semibold">high</span> · review effort <span class="text-slate-200 font-semibold">4/5</span></div>
+          <div class="text-xs text-slate-500 mt-1">str half genuinely fixes the root cause; the <span class="font-mono">bytes</span> half ships a tested-but-self-failing regression.</div>
+        </div>
+      </div>
+      <h3 class="mt-5 mb-2 text-xs uppercase tracking-wider text-slate-500">Findings</h3>
+      <div class="overflow-x-auto scrollbar rounded-lg panel">
+        <table class="w-full text-xs min-w-[640px]">
+          <thead class="text-slate-500 text-left">
+            <tr class="border-b border-[#232a3b]"><th class="py-2 px-3 w-20">Severity</th><th class="py-2 px-3 w-72">File</th><th class="py-2 px-3">Issue + trigger</th></tr>
+          </thead>
+          <tbody class="divide-y divide-[#232a3b]">
+            <template x-for="f in findings" :key="f.file+f.sev">
+              <tr class="hover:bg-[#161a28]">
+                <td class="py-2 px-3"><span class="chip rounded px-1.5 py-0.5 font-mono" :class="sev(f.sev)" x-text="f.sev"></span></td>
+                <td class="py-2 px-3 font-mono text-slate-300 break-all" x-text="f.file"></td>
+                <td class="py-2 px-3 text-slate-400" x-text="f.issue"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="mt-5 mb-2 text-xs uppercase tracking-wider text-slate-500">The repro that made the verdict honest</h3>
+      <pre class="font-mono text-[11px] panel rounded p-3 overflow-x-auto scrollbar text-slate-300">payload = '<?xml version="1.0" encoding="ISO-8859-1"?>…Société…'.encode('latin-1')
+OLD (base 19.0): b'&lt;Inv&gt;…Soci&#233;t&#233;…&lt;/Inv&gt;'   # works
+NEW (this PR):   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xe9
+
+--- the PR's own new test, against the PR's own code ---
+--- test_non_utf8_bytes_do_not_raise ---
+FAIL -> UnicodeDecodeError: 'utf-8' codec can't decode byte 0xe9 in position 3</pre>
+      <p class="text-xs text-slate-500 mt-2">The agent ran the PR's test against the PR's code before it agreed the PR was broken — evidence, not vibes.</p>
+      <div class="mt-4 text-xs">
+        <a class="underline gold hover:text-orange-300" href="docs/showcase/e2e-odoo-pr3-opus5-agentic-loop/review.md" target="_blank">Full review.md ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: COST & TOKENS ===== -->
+  <section x-show="tab==='cost'" class="mt-3 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <template x-for="c in costs" :key="c.label">
+      <div class="panel rounded-lg p-4">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500" x-text="c.label"></div>
+        <div class="text-2xl mt-1" :class="c.hot ? 'gold' : 'text-slate-200'" x-text="c.val"></div>
+        <div class="text-[11px] text-slate-500 mt-0.5" x-text="c.sub"></div>
+      </div>
+    </template>
+    <div class="panel rounded-lg p-4 lg:col-span-4">
+      <h2 class="text-sm font-semibold mb-3 flame">Per-run trace package (Actions artifact · 90d)</h2>
+      <pre class="font-mono text-[11px] leading-relaxed text-slate-300 whitespace-pre-wrap">traces/pr3-run30574256524-a1/
+  meta.json          prompt.md         context.md         pr.json  pr.diff
+  review.raw.md      review.md         hermes.stderr      timings.json
+  agent-loop/{ agent-loop.md, agent-loop.json, agent.log, usage.json }
+  memory-before.md    memory-after.md</pre>
+      <p class="text-xs text-slate-500 mt-2">Secrets (<span class="font-mono">sk-or-…</span>, <span class="font-mono">OPENROUTER_API_KEY</span>) redacted before upload.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="max-w-6xl mx-auto px-4 py-6 text-center text-xs text-slate-600">
+  Numbers from trace <span class="font-mono">pr3-run30574256524-a1</span> ·
+  <a class="underline hover:text-orange-300" href="https://github.com/archit15singh/luffy-pr-review-agent">archit15singh/luffy-pr-review-agent</a> ·
+  One comment. One review. Memory that grows.
+</footer>
+
+<script>
+function luffy(){
+  return {
+    tab:'pipeline',
+    tabs:[
+      {id:'pipeline',label:'Pipeline'},
+      {id:'loop',label:'Agent loop'},
+      {id:'review',label:'Review'},
+      {id:'cost',label:'Cost & trace'},
+    ],
+    stages:[
+      {name:'preload_hub_memory',sec:0,exit:0,hot:false,pct:2},
+      {name:'assemble',          sec:2,exit:0,hot:false,pct:6},
+      {name:'hermes',            sec:251,exit:0,hot:true,pct:100},
+      {name:'normalize',         sec:0,exit:0,hot:false,pct:2},
+      {name:'distill',           sec:0,exit:0,hot:false,pct:2},
+      {name:'save_trace',        sec:0,exit:0,hot:false,pct:2},
+      {name:'publish_hub',       sec:0,exit:0,hot:false,pct:2},
+    ],
+    loop:[
+      {kind:'user',      title:'review prompt + PR #3 meta',
+        desc:'Luffy SOUL + structured contract + diff + workspace pointers.'},
+      {kind:'tool',      title:'cat pr.diff · cat context.md',
+        desc:'Reads the unified diff and assembled PR context before anything else.'},
+      {kind:'tool',      title:'python3 café repro · sed xml_utils.py',
+        desc:'Tries to reproduce the Latin-1 / surrogatepass claim on the runner.',
+        out:"b'caf\\xe9'\nRAISED: UnicodeDecodeError 'utf-8' codec can't decode byte 0xe9 in position 3"},
+      {kind:'tool',      title:'grep remove_control_characters call sites',
+        desc:'Scopes the blast radius — 8 call sites in tree.'},
+      {kind:'tool',      title:'run the PR\'s own new test class',
+        desc:'Executes TestRemoveControlCharacters against the PR code itself.',
+        out:"--- test_non_utf8_bytes_do_not_raise ---\nFAIL -> UnicodeDecodeError: 'utf-8' codec can't decode byte 0xe9 in position 3"},
+      {kind:'tool',      title:'surrogatepass vs surrogateescape',
+        desc:'Probes both codecs on arbitrary bad bytes to prove the comment wrong.',
+        out:"surrogatepass  b'caf\\xe9' -> RAISE UnicodeDecodeError\nsurrogateescape b'caf\\xe9' -> 'caf\\udce9'   # round-trips"},
+      {kind:'tool',      title:'cleanup_xml_node boundary + lxml check',
+        desc:'Reads the in-tree consumer + checks the regex class actually strips U+FFFE/U+FFFF.'},
+      {kind:'tool',      title:'validate the suggested fix',
+        desc:'Runs the corrected surrogateescape + surrogate-preserving class against EDI XML.',
+        out:"lxml -> b'<Inv><P>Soci&#233;t&#233;</P></Inv>'\nlatin-1 bytes preserved byte-identical? True"},
+      {kind:'tool',      title:'grep all 8 cleanup_xml_node sites',
+        desc:'Final scope check before writing the review.'},
+      {kind:'assistant', title:'FINAL review Markdown · REQUEST CHANGES 42/100',
+        desc:'Structured review posted to the PR: 4 findings, one code suggestion, security line, tests & risk.'},
+    ],
+    findings:[
+      {sev:'critical', file:'odoo/tools/xml_utils.py',
+        issue:"errors='surrogatepass' raises on non-UTF-8 bytes — Regresses cleanup_xml_node on Latin-1 EDI/UBL payloads that worked on 19.0."},
+      {sev:'high', file:'addons/…/test_xml_tools.py',
+        issue:"test_non_utf8_bytes_do_not_raise fails against the PR's own implementation. Self-contradicting test."},
+      {sev:'medium', file:'odoo/tools/xml_utils.py',
+        issue:"Naive surrogateescape swap strips accents — Société -> Socit, silent data loss on invoice party names."},
+      {sev:'low', file:'odoo/tools/xml_utils.py',
+        issue:"Docstring promises 'returns same type' but bytearray / memoryview return bytes."},
+    ],
+    costs:[
+      {label:'Total tokens',val:'195,197',sub:'reported total',hot:true},
+      {label:'Cache read',  val:'156,634',sub:'prompt-cache dominant'},
+      {label:'Output tokens',val:'14,601',sub:'reasoning 1,585'},
+      {label:'Est. cost',    val:'$0.59',sub:'per OpenRouter models API',hot:true},
+    ],
+    sev(s){
+      return s==='critical' ? 'text-rose-400 border-rose-500/40'
+        : s==='high' ? 'text-orange-300 border-orange-500/40'
+        : s==='medium' ? 'text-amber-300 border-amber-500/40'
+        : 'text-slate-400 border-slate-500/40';
+    },
+  };
+}
+</script>
+</body>
+</html>
