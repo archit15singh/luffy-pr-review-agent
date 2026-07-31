@@ -25,7 +25,7 @@
   <br />
   <!-- Product facts -->
   <img alt="Trigger" src="https://img.shields.io/badge/%40luffy%20review%20this%20pr-trigger-FF6B2C?style=for-the-badge&logo=github&logoColor=white" />
-  <img alt="Default model" src="https://img.shields.io/badge/model-openai%2Fgpt--5--mini-0B0F19?style=for-the-badge&logo=openai&logoColor=white" />
+  <img alt="Default model" src="https://img.shields.io/badge/model-anthropic%2Fclaude--opus--5-0B0F19?style=for-the-badge&logo=anthropic&logoColor=white" />
   <img alt="Provider" src="https://img.shields.io/badge/provider-OpenRouter-C41E3A?style=for-the-badge&logo=linktree&logoColor=white" />
   <br />
   <!-- Stack -->
@@ -205,7 +205,7 @@ Palette: **ink** `#0B0F19` · **flame** `#FF6B2C` · **crimson** `#C41E3A` · **
 
 - Full PR **comments** only (not inline review threads yet)  
 - Diffs truncated at `MAX_DIFF_BYTES`  
-- Default model is **paid** on OpenRouter (`openai/gpt-5-mini`) — not free  
+- Default model is **paid** on OpenRouter (`anthropic/claude-opus-5`) — not free  
 - Hermes is installed on the runner (Docker pin later)  
 - Install on each target repo; not a global bot for arbitrary public repos  
 

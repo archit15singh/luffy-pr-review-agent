@@ -4,7 +4,7 @@
 model:
   provider: openrouter
   # Override with LUFFY_MODEL / OPENROUTER_MODEL.
-  default: openai/gpt-5-mini
+  default: anthropic/claude-opus-5
 
 terminal:
   backend: local

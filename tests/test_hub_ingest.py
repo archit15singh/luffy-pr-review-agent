@@ -29,7 +29,7 @@ class HubIngestTests(unittest.TestCase):
                     "run_id": "123",
                     "run_attempt": "1",
                     "trace_id": "pr7-run123-a1",
-                    "model": "openai/gpt-5-mini",
+                    "model": "anthropic/claude-opus-5",
                     "status": "success",
                     "verdict": "REQUEST CHANGES",
                     "review_md": "## Review\n\n**Verdict:** REQUEST CHANGES\n\n### Summary\nok\n",

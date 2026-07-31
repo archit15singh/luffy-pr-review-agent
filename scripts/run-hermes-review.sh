@@ -19,7 +19,7 @@ LUFFY_ROOT="${LUFFY_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 OUT_DIR="${OUT_DIR:-$LUFFY_ROOT/.luffy-out}"
 HERMES_HOME="${HERMES_HOME:-$LUFFY_ROOT/.luffy-hermes-home}"
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$LUFFY_ROOT}"
-MODEL="${LUFFY_MODEL:-${OPENROUTER_MODEL:-openai/gpt-5-mini}}"
+MODEL="${LUFFY_MODEL:-${OPENROUTER_MODEL:-anthropic/claude-opus-5}}"
 
 mkdir -p "$OUT_DIR" "$HERMES_HOME/memories"
 

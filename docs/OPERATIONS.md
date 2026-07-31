@@ -4,7 +4,7 @@
 
 1. Put this project (or at least `agent/`, `scripts/`, `.github/workflows/luffy-pr-review.yml`) on the **default branch** of a GitHub repo.
 2. Repository secret: `OPENROUTER_API_KEY`
-3. Optional variable: `LUFFY_MODEL` (default in scripts: `openai/gpt-5-mini`)
+3. Optional variable: `LUFFY_MODEL` (default in scripts: `anthropic/claude-opus-5`)
 4. On a PR, comment: `@luffy review this pr`
 
 ## High-ROI fixes
