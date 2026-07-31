@@ -1,0 +1,18 @@
+{
+  "id": "flame",
+  "name": "Flame",
+  "description": "Luffy mark palette — ink, flame, crimson, gold",
+  "colors": {
+    "ink": "0B0F19",
+    "flame": "FF6B2C",
+    "crimson": "C41E3A",
+    "gold": "FFD166",
+    "muted": "6B7280",
+    "surface": "111827"
+  },
+  "badgeStyle": "for-the-badge",
+  "badgeStyleInline": "flat-square",
+  "fonts": {
+    "display": "ui-sans-serif, system-ui, sans-serif"
+  }
+}

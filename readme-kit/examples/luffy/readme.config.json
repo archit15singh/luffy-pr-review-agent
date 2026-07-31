@@ -1,0 +1,158 @@
+{
+  "theme": "flame",
+  "pack": "ai-agent",
+  "product": {
+    "name": "Luffy",
+    "tagline": "Comment-triggered PR review agent",
+    "one_liner": "Hermes Agent + OpenRouter + growing hub memory + redacted run traces."
+  },
+  "repo": {
+    "owner": "archit15singh",
+    "name": "luffy-pr-review-agent",
+    "default_branch": "main",
+    "private": true
+  },
+  "badges": [
+    {
+      "type": "workflow",
+      "workflow": "luffy-pr-review.yml",
+      "label": "PR Review",
+      "message": "comment · Actions",
+      "color": "2ea44f"
+    },
+    {
+      "type": "workflow",
+      "workflow": "ingest-luffy-run.yml",
+      "label": "Hub memory",
+      "message": "central ingest",
+      "color": "C41E3A"
+    },
+    {
+      "type": "static",
+      "label": "trigger",
+      "message": "@luffy review this pr",
+      "color": "FF6B2C",
+      "logo": "github"
+    },
+    {
+      "type": "static",
+      "label": "model",
+      "message": "anthropic/claude-opus-5",
+      "color": "0B0F19"
+    },
+    {
+      "type": "static",
+      "label": "provider",
+      "message": "OpenRouter",
+      "color": "C41E3A"
+    },
+    {
+      "type": "last-commit",
+      "label": "branch",
+      "message": "main",
+      "color": "0B0F19"
+    },
+    {
+      "type": "license",
+      "message": "MIT"
+    }
+  ],
+  "hero": {
+    "mark": "assets/luffy-artifact-orbital-core.png",
+    "show_mark": true,
+    "mark_width": 360
+  },
+  "sections": [
+    "hero",
+    "badges",
+    "why",
+    "trigger",
+    "architecture",
+    "e2e",
+    "agentic_loop",
+    "custom_showcase",
+    "setup",
+    "local",
+    "traces",
+    "memory",
+    "layout",
+    "docs",
+    "limits",
+    "footer"
+  ],
+  "content": {
+    "why": "Most AI PR bots are stateless chat on a diff. Luffy is a review control plane: explicit trigger, bounded context (sparse checkout + capped diff), Hermes via OpenRouter, durable hub memory so the next review on the same repo is smarter, and redacted traces as Actions artifacts for audit.",
+    "trigger": [
+      "@luffy review this pr",
+      "@luffy review"
+    ],
+    "trigger_note": "Also: **Actions → Luffy PR Review → Run workflow** (PR number).",
+    "architecture_mermaid": "diagrams/architecture.mmd",
+    "architecture_note": "Install Luffy on each **target** repo; this hub stores memory under `memory/repos/`.",
+    "e2e_mermaid": "diagrams/e2e.mmd",
+    "pipeline_mermaid": "diagrams/pipeline.mmd",
+    "setup_steps": [
+      "Copy `agent/`, `scripts/`, and `.github/workflows/luffy-pr-review.yml` onto the **default branch**",
+      "Add secret `OPENROUTER_API_KEY`",
+      "Add secret `LUFFY_HUB_TOKEN` (PAT that can push to this hub)",
+      "Optional vars: `LUFFY_MODEL`, `LUFFY_HUB_REPO`, `LUFFY_HUB_MODE`",
+      "Comment on a PR: `@luffy review this pr`"
+    ],
+    "local_commands": "# .env has OPENROUTER_API_KEY (gitignored)\n./scripts/review-local.sh owner/repo 123\nPOST_COMMENT=1 ./scripts/review-local.sh owner/repo 123",
+    "traces": "Each run packages a redacted trace and uploads Actions artifacts.",
+    "traces_layout": ".luffy-out/traces/pr{N}-run{id}-a{attempt}/\n  meta.json  prompt.md  context.md  pr.diff\n  review.raw.md  review.md  hermes.stderr  timings.json",
+    "traces_download": "gh run download <run-id> -R owner/repo -n luffy-trace-pr1-run<run-id>",
+    "memory": "After each run, the target publishes into **this** hub repo so memory grows across reviews.",
+    "memory_layout": "memory/repos/{owner}--{repo}/\n  MEMORY.md\n  latest.json\n  runs/{trace_id}/meta.json|review.md|summary.md",
+    "layout": "agent/          SOUL, prompts, Hermes config\nscripts/        assemble → hermes → normalize → hub\nmemory/         central per-repo MEMORY (hub)\nreadme-kit/     compile README from theme + pack + config\nassets/         brand mark + favicon\n.github/workflows/",
+    "docs_links": [
+      {
+        "title": "Blog: Building Luffy (agentic PR review)",
+        "path": "docs/blog/building-luffy-agentic-pr-review.md"
+      },
+      {
+        "title": "Architecture",
+        "path": "docs/ARCHITECTURE.md"
+      },
+      {
+        "title": "Operations",
+        "path": "docs/OPERATIONS.md"
+      },
+      {
+        "title": "ROI fixes",
+        "path": "docs/ROI-FIXES.md"
+      },
+      {
+        "title": "README branding ecosystem",
+        "path": "docs/README-BRANDING-ECOSYSTEM.md"
+      },
+      {
+        "title": "readme-kit MVP",
+        "path": "docs/README-KIT-MVP.md"
+      },
+      {
+        "title": "Brand banner options (pick one)",
+        "path": "assets/brand-options/README.md"
+      }
+    ],
+    "limits": [
+      "PR comment reviews only (not inline threads yet)",
+      "Diffs truncated at MAX_DIFF_BYTES",
+      "Default OpenRouter model is paid (anthropic/claude-opus-5; override with LUFFY_MODEL)",
+      "Install on each target repo — not a global bot for arbitrary public repos",
+      "Hermes tool-loop traces not fully exported yet (final review + outer pipeline are)"
+    ],
+    "footer": "Luffy · Hermes Agent · OpenRouter · memory-backed review · generated by readme-kit",
+    "custom_showcase_title": "E2E showcase (live · Opus 5 agentic loop)",
+    "custom_showcase": "Full captured run on [odoo/odoo#271153](https://github.com/odoo/odoo/issues/271153) → [archit15singh/odoo#3](https://github.com/archit15singh/odoo/pull/3).\n\n| | |\n|--|--|\n| **Actions** | [30574256524](https://github.com/archit15singh/odoo/actions/runs/30574256524) |\n| **Session** | `20260730_191954_63f003` |\n| **Model** | `anthropic/claude-opus-5` via OpenRouter |\n| **Loop** | **10 API calls** · **9 tool-call turns** · **26 messages** · ~251s Hermes |\n| **Tokens** | ~195k total (cache-heavy) · est. **$0.59** |\n| **Verdict** | REQUEST CHANGES · **Score** 42/100 · effort 4/5 |\n| **Package** | [`docs/showcase/e2e-odoo-pr3-opus5-agentic-loop/`](docs/showcase/e2e-odoo-pr3-opus5-agentic-loop/) |\n\n### High-level e2e agentic loop (this trace)\n\nMermaid below is **not a sketch** — nodes match the live session: outer Actions control plane, then Hermes multi-turn tool loop (read diff → codec repros → call-site grep → surrogatepass vs surrogateescape → final review).\n\n```mermaid\n%% Live e2e · archit15singh/odoo#3 · run 30574256524 · anthropic/claude-opus-5\n%% Session 20260730_191954_63f003 · 10 API calls · 9 tool-call turns · 26 messages\nflowchart TB\n  subgraph Outer[\"Outer control plane · GitHub Actions\"]\n    T[\"@luffy review this pr\"]\n    Gate[\"Gate · association\"]\n    Sparse[\"Sparse checkout · PR head\"]\n    Pre[\"preload hub MEMORY\"]\n    Asm[\"assemble prompt + diff\"]\n    Post[\"PR comment · artifacts · hub memory\"]\n  end\n\n  subgraph Loop[\"Hermes agentic loop · real trace\"]\n    direction TB\n    U0[\"① USER prompt<br/>SOUL + contract + PR #3 meta\"]\n    A1[\"② ASSISTANT + tools<br/>cat pr.diff · cat context.md\"]\n    A2[\"③ tools · repro<br/>latin-1 café + read xml_utils.py\"]\n    A3[\"④ tools · call sites<br/>grep remove_control_characters\"]\n    A4[\"⑤ tools · cleanup_xml_node<br/>+ more codec experiments\"]\n    A5[\"⑥–⑨ tools · surrogatepass vs<br/>surrogateescape · EDI payload\"]\n    A6[\"⑩ tools · callers of cleanup_xml_node<br/>+ final local repro\"]\n    Out[\"⑪ FINAL review Markdown<br/>Verdict REQUEST CHANGES · Score 42/100\"]\n    OR[\"OpenRouter · anthropic/claude-opus-5\"]\n\n    U0 --> A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> Out\n    A1 & A2 & A3 & A4 & A5 & A6 <--> OR\n  end\n\n  T --> Gate --> Sparse --> Pre --> Asm --> U0\n  Out --> Post\n\n  classDef tool fill:#1f2937,stroke:#FF6B2C,color:#fff\n  classDef model fill:#0B0F19,stroke:#FFD166,color:#FFD166\n  classDef ship fill:#14532d,stroke:#22c55e,color:#fff\n  class A1,A2,A3,A4,A5,A6 tool\n  class OR,Out model\n  class Post ship\n```\n\n**What the agent actually did (condensed from the trace)**\n\n| Turn | Kind | What happened |\n|------|------|----------------|\n| 1 | user | Full Luffy review prompt + PR #3 meta |\n| 2 | tools | `cat pr.diff`, `cat context.md` |\n| 3 | tools | Latin-1 `café` repro + read `xml_utils.py` |\n| 4 | tools | `grep remove_control_characters` call sites |\n| 5–8 | tools | More codec / `cleanup_xml_node` experiments |\n| 9 | tools | Callers of `cleanup_xml_node` + final repro |\n| 10 | assistant | Structured review → REQUEST CHANGES (surrogatepass bug) |\n\nFull step dump (every tool arg + message): [`agent-loop/agent-loop.md`](docs/showcase/e2e-odoo-pr3-opus5-agentic-loop/agent-loop/agent-loop.md) · JSON: [`agent-loop/agent-loop.json`](docs/showcase/e2e-odoo-pr3-opus5-agentic-loop/agent-loop/agent-loop.json)\n\n```bash\ngh run download 30574256524 -R archit15singh/odoo -n luffy-trace-pr3-run30574256524\n```\n",
+    "agentic_loop_title": "Agentic loop (example)",
+    "agentic_loop_intro": "End-to-end control plane for one review: comment trigger → Actions gate → orchestrator stages → Hermes multi-turn agentic loop (tools + OpenRouter · Claude Opus 5) → normalize → memory + full step trace → PR comment. Live package: docs/showcase/e2e-odoo-pr3-opus5-agentic-loop/.",
+    "agentic_loop_ascii": "diagrams/agentic-loop-ascii.txt",
+    "agentic_loop_mermaid": "diagrams/agentic-loop.mmd",
+    "agentic_loop_note": "Inner loop: Hermes may call tools (read workspace files) before emitting the final Markdown review. Outer loop is deterministic shell orchestration so every run leaves a redacted trace under `.luffy-out/traces/` and hub memory under `memory/repos/`."
+  },
+  "output": {
+    "readme": "README.md",
+    "branding_dir": "branding"
+  }
+}

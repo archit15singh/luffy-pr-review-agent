@@ -1,0 +1,8 @@
+flowchart LR
+  A[preload_hub_memory] --> B[assemble]
+  B --> C[hermes -z]
+  C --> D[normalize]
+  D --> E[distill]
+  E --> F[save_trace]
+  F --> G[publish_hub]
+  G --> H[PR comment + artifacts]

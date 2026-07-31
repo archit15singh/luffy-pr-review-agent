@@ -1,0 +1,18 @@
+{
+  "id": "terminal",
+  "name": "Terminal",
+  "description": "Dark green-on-black hacker aesthetic",
+  "colors": {
+    "ink": "0A0A0A",
+    "flame": "22C55E",
+    "crimson": "16A34A",
+    "gold": "A3E635",
+    "muted": "6B7280",
+    "surface": "052E16"
+  },
+  "badgeStyle": "for-the-badge",
+  "badgeStyleInline": "flat-square",
+  "fonts": {
+    "display": "ui-monospace, SFMono-Regular, Menlo, monospace"
+  }
+}

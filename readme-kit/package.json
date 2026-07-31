@@ -1,0 +1,22 @@
+{
+  "name": "readme-kit",
+  "version": "0.1.0",
+  "description": "Compile intent (theme + pack + YAML/JSON) into GitHub-safe README branding",
+  "type": "module",
+  "bin": {
+    "readme-kit": "./bin/readme-kit.mjs"
+  },
+  "scripts": {
+    "build:luffy": "node bin/readme-kit.mjs build examples/luffy/readme.config.yaml -o ../README.generated.md",
+    "build:luffy:write": "node bin/readme-kit.mjs build examples/luffy/readme.config.yaml -o ../README.md --force",
+    "test": "node bin/readme-kit.mjs build examples/luffy/readme.config.yaml -o /tmp/luffy-readme-yaml.md && node bin/readme-kit.mjs build examples/luffy/readme.config.json -o /tmp/luffy-readme-json.md && cmp -s /tmp/luffy-readme-yaml.md /tmp/luffy-readme-json.md && test -s /tmp/luffy-readme-yaml.md",
+    "brand:options": "node scripts/generate-hero-options.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "yaml": "^2.9.0"
+  }
+}

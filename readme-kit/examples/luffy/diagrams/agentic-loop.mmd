@@ -1,0 +1,50 @@
+flowchart TB
+  subgraph Trigger["1 · Trigger"]
+    Dev["Developer"]
+    Comment["@luffy review this pr"]
+    Gate["Gate · pattern + association allowlist"]
+  end
+
+  subgraph ControlPlane["2 · Control plane · GitHub Actions"]
+    Eyes["React 👀"]
+    Sparse["Sparse PR head + Luffy agent/scripts"]
+    CacheR["Restore Hermes install cache"]
+  end
+
+  subgraph Orchestrator["3 · Orchestrator · run-luffy-review.sh"]
+    Preload["preload_hub_memory\nHub MEMORY.md → HERMES_HOME"]
+    Assemble["assemble-context\nPR meta · diff · prompt · SOUL"]
+    Hermes["Hermes Agent · hermes -z"]
+    Normalize["normalize-review\ncontract · marker · size cap"]
+    Distill["distill-memory\nappend structured notes"]
+    Trace["save-trace\nredacted package"]
+    HubPub["publish-run-to-hub\nmemory/repos/…"]
+  end
+
+  subgraph InnerLoop["4 · Agentic loop · Hermes + OpenRouter"]
+    Prompt["Review prompt + workspace + memory"]
+    Think["Model reasoning"]
+    Tools["Optional tools · read workspace"]
+    Draft["Draft Markdown review"]
+    Prompt --> Think
+    Think --> Tools
+    Tools --> Think
+    Think --> Draft
+  end
+
+  subgraph Output["5 · Ship"]
+    Post["Post / replace PR comment"]
+    React["React ✅ / ❌"]
+    Arts["Upload trace + out artifacts"]
+    CacheW["Save Hermes cache on miss"]
+  end
+
+  OR["OpenRouter · anthropic/claude-opus-5"]
+
+  Dev --> Comment --> Gate --> Eyes --> Sparse --> CacheR
+  CacheR --> Preload --> Assemble --> Hermes
+  Hermes --> Prompt
+  Think --> OR
+  OR --> Think
+  Draft --> Normalize --> Distill --> Trace --> HubPub
+  HubPub --> Post --> React --> Arts --> CacheW

@@ -1,0 +1,36 @@
+@luffy review this pr
+        │
+        ▼
+┌───────────────────────────────────────────────────────────────┐
+│  GitHub Actions · luffy-pr-review.yml                         │
+│  gate (pattern + association) → 👀 → sparse checkout → cache  │
+└────────────────────────────┬──────────────────────────────────┘
+                             │
+                             ▼
+┌───────────────────────────────────────────────────────────────┐
+│  Orchestrator · scripts/run-luffy-review.sh                   │
+│                                                               │
+│   1 preload_hub_memory ──► Hub MEMORY.md → HERMES_HOME        │
+│   2 assemble-context   ──► PR meta + diff + prompt + SOUL     │
+│   3 hermes -z  ───────────────────────────────────────────┐   │
+│        │                                                  │   │
+│        │    ┌─ agentic loop (Hermes + OpenRouter) ──────┐ │   │
+│        │    │  prompt + memory + workspace               │ │   │
+│        │    │       │                                   │ │   │
+│        │    │       ▼                                   │ │   │
+│        │    │  model reasoning ◄──► tools (read files)  │ │   │
+│        │    │       │                                   │ │   │
+│        │    │       ▼                                   │ │   │
+│        │    │  draft Markdown review                    │ │   │
+│        │    └───────────────────────────────────────────┘ │   │
+│        ▼                                                  │   │
+│   4 normalize-review   ──► contract · marker · cap        │   │
+│   5 distill-memory     ──► append notes to MEMORY.md      │   │
+│   6 save-trace         ──► redacted .luffy-out/traces/    │   │
+│   7 publish-run-to-hub ──► memory/repos/{owner}--{repo}/  │   │
+└────────────────────────────┬──────────────────────────────────┘
+                             │
+                             ▼
+┌───────────────────────────────────────────────────────────────┐
+│  Ship · PR comment (replace prior) · ✅/❌ · artifacts · cache│
+└───────────────────────────────────────────────────────────────┘

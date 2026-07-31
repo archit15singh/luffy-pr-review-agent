@@ -1,0 +1,22 @@
+{
+  "id": "ai-agent",
+  "name": "AI Agent product README",
+  "description": "Vertical pack for agent/tooling repos (Luffy-shaped)",
+  "defaultSections": [
+    "hero",
+    "badges",
+    "why",
+    "trigger",
+    "architecture",
+    "e2e",
+    "setup",
+    "local",
+    "traces",
+    "memory",
+    "layout",
+    "docs",
+    "limits",
+    "footer"
+  ],
+  "assets": ["hero-banner"]
+}

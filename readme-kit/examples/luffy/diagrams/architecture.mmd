@@ -1,0 +1,26 @@
+flowchart TB
+  subgraph Humans
+    Dev["Developer"]
+  end
+
+  subgraph TargetRepo["Target repo"]
+    PR["Pull request"]
+    Comment["@luffy review this pr"]
+    GHA["GitHub Actions"]
+    Scripts["Luffy scripts"]
+  end
+
+  subgraph LLM["Inference"]
+    Hermes["Hermes Agent"]
+    OR["OpenRouter"]
+  end
+
+  subgraph Hub["Hub repo"]
+    Memory["memory/repos/..."]
+  end
+
+  Dev --> Comment --> PR --> GHA
+  GHA --> Scripts
+  Scripts --> Hermes --> OR
+  Scripts --> Memory
+  Scripts --> PR

@@ -1,0 +1,20 @@
+sequenceDiagram
+  autonumber
+  actor Dev as Developer
+  participant PR as Target PR
+  participant GHA as GitHub Actions
+  participant Hub as Luffy hub
+  participant Hermes as Hermes Agent
+  participant OR as OpenRouter
+
+  Dev->>PR: @luffy review this pr
+  PR->>GHA: issue_comment
+  GHA->>Hub: preload MEMORY.md
+  Hub-->>GHA: prior notes
+  GHA->>GHA: assemble prompt + diff
+  GHA->>Hermes: hermes -z
+  Hermes->>OR: completions
+  OR-->>Hermes: review markdown
+  Hermes-->>GHA: final text
+  GHA->>Hub: publish memory + run
+  GHA->>PR: review comment + artifacts
