@@ -1,0 +1,154 @@
+diff --git a/addons/account/tools/dict_to_xml.py b/addons/account/tools/dict_to_xml.py
+index f5912d2d02e9cf..eaa6f7d9a51fc8 100644
+--- a/addons/account/tools/dict_to_xml.py
++++ b/addons/account/tools/dict_to_xml.py
+@@ -67,7 +67,9 @@ def convert_tag_to_lxml_convention(tag):
+     # Add text content if present
+     text = node.get('_text')
+     if text is not None and text is not False:
+-        element.text = remove_control_characters(str(text).encode()).decode()
++        # Filter at Unicode level (str in → str out). Encoding the pattern and
++        # scrubbing UTF-8 bytes used to leave U+FFFE/U+FFFF intact (#271153).
++        element.text = remove_control_characters(str(text))
+ 
+     # Add child nodes
+     for child_tag, child in node.items():
+diff --git a/odoo/addons/test_testing_utilities/tests/test_xml_tools.py b/odoo/addons/test_testing_utilities/tests/test_xml_tools.py
+index 3cc09bd7f89492..921dcd2a0751f9 100644
+--- a/odoo/addons/test_testing_utilities/tests/test_xml_tools.py
++++ b/odoo/addons/test_testing_utilities/tests/test_xml_tools.py
+@@ -4,7 +4,7 @@
+ 
+ from lxml import etree
+ from odoo.tests import common
+-from odoo.tools.xml_utils import cleanup_xml_node
++from odoo.tools.xml_utils import cleanup_xml_node, remove_control_characters
+ 
+ 
+ class TestXMLTools(common.TransactionCase):
+@@ -151,3 +151,47 @@ def check_xml_cleanup_result_is_as_expected(self, original_string, expected_stri
+         result_string = etree.tostring(cleanup_xml_node(original_string, **kwargs)).decode()
+         self.assertEqual(expected_string, result_string)
+         self.assertNotEqual(expected_string, original_string)
++
++
++class TestRemoveControlCharacters(common.TransactionCase):
++    """odoo/odoo#271153 — filter must run on Unicode, not UTF-8 bytes."""
++
++    def test_strips_non_xml_codepoints_str(self):
++        dirty = "ok\x00\x01\ufffe\uffff\tend"
++        clean = remove_control_characters(dirty)
++        self.assertEqual(clean, "ok\tend")
++        self.assertNotIn("\ufffe", clean)
++        self.assertNotIn("\uffff", clean)
++
++    def test_strips_non_xml_codepoints_bytes(self):
++        dirty = "A\ufffeB\uffffC\x00".encode("utf-8")
++        clean = remove_control_characters(dirty)
++        self.assertIsInstance(clean, bytes)
++        self.assertEqual(clean, b"ABC")
++        self.assertNotIn(b"\xef\xbf\xbe", clean)
++        self.assertNotIn(b"\xef\xbf\xbf", clean)
++
++    def test_preserves_xml_allowed_controls(self):
++        # #x9, #xA, #xD and printable BMP
++        s = "a\tb\nc\rd"
++        self.assertEqual(remove_control_characters(s), s)
++        self.assertEqual(remove_control_characters(s.encode()), s.encode())
++
++    def test_lxml_accepts_sanitized_text(self):
++        dirty = "Invoice #1\ufffe — café\uffff"
++        clean = remove_control_characters(dirty)
++        el = etree.Element("Note")
++        el.text = clean  # must not raise ValueError
++        self.assertEqual(el.text, "Invoice #1 — café")
++
++    def test_type_error_on_bad_input(self):
++        with self.assertRaises(TypeError):
++            remove_control_characters(123)
++
++    def test_non_utf8_bytes_do_not_raise(self):
++        # Latin-1 high bytes must not crash the sanitizer (EDI edge case).
++        dirty = "café".encode("latin-1")  # b'caf\xe9'
++        clean = remove_control_characters(dirty)
++        self.assertIsInstance(clean, bytes)
++        # Result is still valid UTF-8 after surrogatepass round-trip.
++        clean.decode("utf-8")
+diff --git a/odoo/tools/xml_utils.py b/odoo/tools/xml_utils.py
+index 09082fb8abbecd..60748f5c37256a 100644
+--- a/odoo/tools/xml_utils.py
++++ b/odoo/tools/xml_utils.py
+@@ -15,33 +15,57 @@
+ __all__ = [
+     "cleanup_xml_node",
+     "load_xsd_files_from_url",
++    "remove_control_characters",
+     "validate_xml_from_attachment",
+ ]
+ 
+ _logger = logging.getLogger(__name__)
+ 
+ 
++# XML 1.0 Char production (negated): strip anything *not* in Char.
++# Must be applied to Unicode strings — encoding the class and matching
++# against UTF-8 bytes collapses multi-byte ranges (e.g. U+FFFE/U+FFFF
++# survive and later crash lxml with "All strings must be XML compatible").
++# See: https://www.w3.org/TR/xml/#charsets
++# Related: odoo/odoo#271153
++_XML_ILLEGAL_CHAR_RE = re.compile(
++    '[^'
++    '\u0009'                 # #x9
++    '\u000A'                 # #xA
++    '\u000D'                 # #xD
++    '\u0020-\uD7FF'
++    '\uE000-\uFFFD'
++    '\U00010000-\U0010FFFF'
++    ']'
++)
++
++
+ def remove_control_characters(byte_node):
++    """Remove characters not allowed by the XML 1.0 ``Char`` production.
++
++    Accepts ``str`` or ``bytes`` and returns the **same type**.
++
++    Filtering must run on Unicode code points. Applying a UTF-8-encoded
++    character class as a *bytes* regex collapses multi-byte ranges, so
++    non-XML characters such as U+FFFE / U+FFFF were kept. Callers that
++    assign the result to ``lxml`` text nodes then raise
++    ``ValueError: All strings must be XML compatible`` (EDI / UBL export).
+     """
+-    The characters to be escaped are the control characters #x0 to #x1F and #x7F (most of which cannot appear in XML)
+-    [...] XML processors must accept any character in the range specified for Char:
+-    `Char	   :: =   	#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]`
+-    source:https://www.w3.org/TR/xml/
+-    """
+-    return re.sub(
+-        '[^'
+-        '\u0009'
+-        '\u000A'
+-        '\u000D'
+-        '\u0020-\uD7FF'
+-        '\uE000-\uFFFD'
+-        '\U00010000-\U0010FFFF'
+-        ']'.encode(),
+-        b'',
+-        byte_node,
++    if isinstance(byte_node, str):
++        return _XML_ILLEGAL_CHAR_RE.sub('', byte_node)
++    if isinstance(byte_node, (bytes, bytearray, memoryview)):
++        raw = bytes(byte_node)
++        # UTF-8 with surrogatepass: round-trip any byte sequence while still
++        # filtering illegal XML code points at the Unicode level. Strict
++        # UTF-8 would raise UnicodeDecodeError on legacy Latin-1 EDI bytes.
++        text_ = raw.decode('utf-8', errors='surrogatepass')
++        return _XML_ILLEGAL_CHAR_RE.sub('', text_).encode('utf-8', errors='surrogatepass')
++    raise TypeError(
++        f"remove_control_characters() expected str or bytes, got {type(byte_node)!r}"
+     )
+ 
+ 
++
+ class odoo_resolver(etree.Resolver):
+     """Odoo specific file resolver that can be added to the XML Parser.
+ 

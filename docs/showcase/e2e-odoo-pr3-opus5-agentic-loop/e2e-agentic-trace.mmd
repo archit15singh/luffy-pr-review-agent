@@ -1,0 +1,37 @@
+%% Live e2e · archit15singh/odoo#3 · run 30574256524 · anthropic/claude-opus-5
+%% Session 20260730_191954_63f003 · 10 API calls · 9 tool-call turns · 26 messages
+flowchart TB
+  subgraph Outer["Outer control plane · GitHub Actions"]
+    T["@luffy review this pr"]
+    Gate["Gate · association"]
+    Sparse["Sparse checkout · PR head"]
+    Pre["preload hub MEMORY"]
+    Asm["assemble prompt + diff"]
+    Post["PR comment · artifacts · hub memory"]
+  end
+
+  subgraph Loop["Hermes agentic loop · real trace"]
+    direction TB
+    U0["① USER prompt<br/>SOUL + contract + PR #3 meta"]
+    A1["② ASSISTANT + tools<br/>cat pr.diff · cat context.md"]
+    A2["③ tools · repro<br/>latin-1 café + read xml_utils.py"]
+    A3["④ tools · call sites<br/>grep remove_control_characters"]
+    A4["⑤ tools · cleanup_xml_node<br/>+ more codec experiments"]
+    A5["⑥–⑨ tools · surrogatepass vs<br/>surrogateescape · EDI payload"]
+    A6["⑩ tools · callers of cleanup_xml_node<br/>+ final local repro"]
+    Out["⑪ FINAL review Markdown<br/>Verdict REQUEST CHANGES · Score 42/100"]
+    OR["OpenRouter · anthropic/claude-opus-5"]
+
+    U0 --> A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> Out
+    A1 & A2 & A3 & A4 & A5 & A6 <--> OR
+  end
+
+  T --> Gate --> Sparse --> Pre --> Asm --> U0
+  Out --> Post
+
+  classDef tool fill:#1f2937,stroke:#FF6B2C,color:#fff
+  classDef model fill:#0B0F19,stroke:#FFD166,color:#FFD166
+  classDef ship fill:#14532d,stroke:#22c55e,color:#fff
+  class A1,A2,A3,A4,A5,A6 tool
+  class OR,Out model
+  class Post ship

@@ -1,0 +1,28 @@
+{
+  "trace_id": "pr3-run30574256524-a1",
+  "schema_version": 1,
+  "meta": "meta.json",
+  "artifacts": [
+    "agent-loop/agent-loop.json",
+    "agent-loop/agent-loop.md",
+    "agent-loop/agent.log",
+    "agent-loop/errors.log",
+    "agent-loop/usage.json",
+    "context.md",
+    "files.txt",
+    "hermes-run.log",
+    "hermes-usage.json",
+    "hermes.stderr",
+    "memory-after.md",
+    "meta.env",
+    "pr.diff",
+    "pr.json",
+    "prompt.md",
+    "review.md",
+    "review.raw.md",
+    "timings.json"
+  ],
+  "review": "review.md",
+  "prompt": "prompt.md",
+  "raw_review": "review.raw.md"
+}

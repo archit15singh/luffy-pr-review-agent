@@ -1,0 +1,92 @@
+{
+  "trace_id": "pr3-run30574256524-a1",
+  "schema_version": 1,
+  "repo": "archit15singh/odoo",
+  "pr_number": "3",
+  "run_id": "30574256524",
+  "run_attempt": "1",
+  "model": "anthropic/claude-opus-5",
+  "status": "complete",
+  "started_at": "2026-07-30T19:23:03Z",
+  "ended_at": "2026-07-30T19:23:03Z",
+  "workspace_root": null,
+  "github_sha": "478ae61fa1a43bba8ec0e3310cedded223cf4658",
+  "github_ref": "refs/heads/19.0",
+  "github_event_name": "issue_comment",
+  "hermes_rc": null,
+  "trigger_comment": "",
+  "files": {
+    "agent-loop/agent-loop.json": {
+      "bytes": 99791,
+      "sha256": "79cc15a816af78a113a59a3d8cb415de64c408e34525b147913aa245dff0560b"
+    },
+    "agent-loop/agent-loop.md": {
+      "bytes": 24231,
+      "sha256": "8eece95f74f85f07e7f1174ea8575cbbad1499c0a62ccd7d659ae8de776c5b32"
+    },
+    "agent-loop/agent.log": {
+      "bytes": 2598,
+      "sha256": "2cbc9bb476c0fd3f8eed286e0cbdbbbeade994893dfa6d7503369acb057d41c4"
+    },
+    "agent-loop/errors.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "agent-loop/usage.json": {
+      "bytes": 463,
+      "sha256": "ae1d83896c725e7ec1790936bcec3721d73ca7e7188eda5d78f336240e320c74"
+    },
+    "context.md": {
+      "bytes": 2639,
+      "sha256": "1d3ce28b667c858ba6c6013b3e0874582b8f072bb610c78bfe49f02c40d43520"
+    },
+    "files.txt": {
+      "bytes": 191,
+      "sha256": "5c1c6e89f6d318f39242c652cb9f9354797f828f43a5ba579b34e59630da9885"
+    },
+    "hermes-run.log": {
+      "bytes": 2598,
+      "sha256": "2cbc9bb476c0fd3f8eed286e0cbdbbbeade994893dfa6d7503369acb057d41c4"
+    },
+    "hermes-usage.json": {
+      "bytes": 463,
+      "sha256": "ae1d83896c725e7ec1790936bcec3721d73ca7e7188eda5d78f336240e320c74"
+    },
+    "hermes.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-after.md": {
+      "bytes": 6269,
+      "sha256": "b3fb7621e8878e215b0c57819d88b91fa298d9015f1f7d6c00d9baaf75533a24"
+    },
+    "meta.env": {
+      "bytes": 529,
+      "sha256": "3077ad01a87d3a8a67723127f946ddd74758aae868760cc717f382498c276e79"
+    },
+    "pr.diff": {
+      "bytes": 6377,
+      "sha256": "82824d2644839f0a5d85184b1e27562bc71189dbd646874e681c6aa016e11e08"
+    },
+    "pr.json": {
+      "bytes": 3688,
+      "sha256": "987663cc7fc9b69c722c79ece9915a6657ae458ad6ae887b84da42db7a12ec2b"
+    },
+    "prompt.md": {
+      "bytes": 5632,
+      "sha256": "9d823b33681c5f0856d43527dbc5a2cf3d53e8ed1e4b79c17450516224d4c348"
+    },
+    "review.md": {
+      "bytes": 11846,
+      "sha256": "6c8348e815e972bbebc5b539445cd158eca38d25b7b542a4d87302b2559cdfb0"
+    },
+    "review.raw.md": {
+      "bytes": 11803,
+      "sha256": "85ed7aa267fb6e0385b000036faaaf72563713714cae1bd33bf1aa3b129cdbb0"
+    },
+    "timings.json": {
+      "bytes": 452,
+      "sha256": "1f5524471a533aa8f5eb1bcc4e5fa33511e34f4866892a3b7744cbccd59ae521"
+    }
+  }
+}
