@@ -1,0 +1,111 @@
+{
+  "ingested_at": "2026-07-30T16:07:48Z",
+  "source_repo": "archit15singh/odoo",
+  "slug": "archit15singh--odoo",
+  "trace_id": "pr1-run30559624590-a1",
+  "pr_number": "1",
+  "run_id": "30559624590",
+  "run_attempt": "1",
+  "model": "openai/gpt-5-mini",
+  "status": "success",
+  "verdict": "REQUEST CHANGES",
+  "review_truncated": false,
+  "timings": {
+    "started_at": "2026-07-30T16:05:58Z",
+    "ended_at": "2026-07-30T16:07:48Z",
+    "total_seconds": 110,
+    "stages": [
+      {
+        "name": "preload_hub_memory",
+        "seconds": 0,
+        "exit_code": 0
+      },
+      {
+        "name": "assemble",
+        "seconds": 1,
+        "exit_code": 0
+      },
+      {
+        "name": "hermes",
+        "seconds": 109,
+        "exit_code": 0
+      },
+      {
+        "name": "distill",
+        "seconds": 0,
+        "exit_code": 0
+      }
+    ]
+  },
+  "meta": {
+    "github_sha": "dcd33af9c3f6207e1bb28f1b296da398b7d5de9b",
+    "github_ref": "refs/heads/19.0",
+    "github_event_name": "issue_comment",
+    "started_at": "2026-07-30T16:05:58Z",
+    "trace_meta": {
+      "trace_id": "pr1-run30559624590-a1",
+      "schema_version": 1,
+      "repo": "archit15singh/odoo",
+      "pr_number": "1",
+      "run_id": "30559624590",
+      "run_attempt": "1",
+      "model": "openai/gpt-5-mini",
+      "status": "success",
+      "started_at": "2026-07-30T16:05:58Z",
+      "ended_at": "2026-07-30T16:07:48Z",
+      "workspace_root": "/home/runner/work/odoo/odoo/workspace",
+      "github_sha": "dcd33af9c3f6207e1bb28f1b296da398b7d5de9b",
+      "github_ref": "refs/heads/19.0",
+      "github_event_name": "issue_comment",
+      "hermes_rc": "0",
+      "trigger_comment": "@luffy review this pr",
+      "files": {
+        "context.md": {
+          "bytes": 1133,
+          "sha256": "fa8529e9cf3d2eb69503e95f586260c2e65b69dc903bff3e8107b4eede236628"
+        },
+        "files.txt": {
+          "bytes": 110,
+          "sha256": "0cc8f9b7fe29b2b561872c467f578e02c93bf53c8c335af3e1793fd6c371e534"
+        },
+        "hermes.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "memory-after.md": {
+          "bytes": 1544,
+          "sha256": "ce19a4f8af9384385619ccf69665c35d5c06652b06e954c106dc159e1b594dbf"
+        },
+        "meta.env": {
+          "bytes": 525,
+          "sha256": "10fa16bbe6f465af3451ff73840b7ff6495c7476ab4c1f467722d75ebb7254fe"
+        },
+        "pr.diff": {
+          "bytes": 1907,
+          "sha256": "494bbd75a564f1e02e7677de0be6b1477ed8a252268e8622ed8a7403d6c04cba"
+        },
+        "pr.json": {
+          "bytes": 1343,
+          "sha256": "5b7c58bff32a8990914994fbbd00596c9c6ad3336efa462b7079054a68a82b5d"
+        },
+        "prompt.md": {
+          "bytes": 2413,
+          "sha256": "c45db252cb1f2207d3c370e56449fabf8f8529eacfe8d547689fc1da57f194d7"
+        },
+        "review.md": {
+          "bytes": 3100,
+          "sha256": "ac702183a83112c8578023dab4253a67b853c890be62f7d25e76eea0135bd2e5"
+        },
+        "review.raw.md": {
+          "bytes": 3057,
+          "sha256": "d7876ee02ac31140af23ca38a73fbc64802d3f853ec9d0934c80b0d10ca24769"
+        },
+        "timings.json": {
+          "bytes": 452,
+          "sha256": "74f3cdce7de265e5b025922f1b138f5fb44c0c19065679e45c7bd509f4aad145"
+        }
+      }
+    }
+  },
+  "schema_version": 1
+}

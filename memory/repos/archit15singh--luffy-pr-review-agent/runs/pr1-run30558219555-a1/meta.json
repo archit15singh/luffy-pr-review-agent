@@ -1,0 +1,106 @@
+{
+  "ingested_at": "2026-07-30T15:47:27Z",
+  "source_repo": "archit15singh/luffy-pr-review-agent",
+  "slug": "archit15singh--luffy-pr-review-agent",
+  "trace_id": "pr1-run30558219555-a1",
+  "pr_number": "1",
+  "run_id": "30558219555",
+  "run_attempt": "1",
+  "model": "openai/gpt-5-mini",
+  "status": "success",
+  "verdict": "REQUEST CHANGES",
+  "review_truncated": false,
+  "timings": {
+    "started_at": "2026-07-30T15:45:15Z",
+    "ended_at": "2026-07-30T15:47:26Z",
+    "total_seconds": 131,
+    "stages": [
+      {
+        "name": "assemble",
+        "seconds": 2,
+        "exit_code": 0
+      },
+      {
+        "name": "hermes",
+        "seconds": 129,
+        "exit_code": 0
+      },
+      {
+        "name": "distill",
+        "seconds": 0,
+        "exit_code": 0
+      }
+    ]
+  },
+  "meta": {
+    "github_sha": "f22e7ad8fb17d7e24b925f2ec8cf86e2f9556d2a",
+    "github_ref": "refs/heads/main",
+    "github_event_name": "issue_comment",
+    "started_at": "2026-07-30T15:45:15Z",
+    "trace_meta": {
+      "trace_id": "pr1-run30558219555-a1",
+      "schema_version": 1,
+      "repo": "archit15singh/luffy-pr-review-agent",
+      "pr_number": "1",
+      "run_id": "30558219555",
+      "run_attempt": "1",
+      "model": "openai/gpt-5-mini",
+      "status": "success",
+      "started_at": "2026-07-30T15:45:15Z",
+      "ended_at": "2026-07-30T15:47:26Z",
+      "workspace_root": "/home/runner/work/luffy-pr-review-agent/luffy-pr-review-agent/workspace",
+      "github_sha": "f22e7ad8fb17d7e24b925f2ec8cf86e2f9556d2a",
+      "github_ref": "refs/heads/main",
+      "github_event_name": "issue_comment",
+      "hermes_rc": "0",
+      "trigger_comment": "@luffy review this pr",
+      "files": {
+        "context.md": {
+          "bytes": 901,
+          "sha256": "976b007aab6664e154b39738ac38f5318531942a33852d987616226c131d18aa"
+        },
+        "files.txt": {
+          "bytes": 57,
+          "sha256": "1aedf1d31079a5b3f2ff5a59341006cab8e35478de348aa890fa9b7754ee5627"
+        },
+        "hermes.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "memory-after.md": {
+          "bytes": 1332,
+          "sha256": "216f5b8ffd3cb8422550955e109ab76bdd84a58b68096664008b386ea07dee5d"
+        },
+        "meta.env": {
+          "bytes": 653,
+          "sha256": "48fa7d9a4707d36cbaf2c3c800893445f20d9913a73fb7573d77ad37fa7fe348"
+        },
+        "pr.diff": {
+          "bytes": 522,
+          "sha256": "6cb498b98b0291fa28af39920eec21719092057dd92ae6c5b7fa68c7e0ce5c09"
+        },
+        "pr.json": {
+          "bytes": 938,
+          "sha256": "fdbb09bc88fe4155b17c071d277de56927cee10f705b8719b2dd531fb4d70709"
+        },
+        "prompt.md": {
+          "bytes": 2250,
+          "sha256": "95ddb70d8b387247abba634d5facd71a822f246f7c5e46f4be9318558888ef08"
+        },
+        "review.md": {
+          "bytes": 3102,
+          "sha256": "897e6a1a4fe79614bd685e331e1d08668a68239ea8b9ac3a4ee47d8b8e188d54"
+        },
+        "review.raw.md": {
+          "bytes": 3059,
+          "sha256": "450bd81ac52c9a703b15d5c6735510a07b60cbfdd93d39e56a0dbf2c725f8056"
+        },
+        "timings.json": {
+          "bytes": 362,
+          "sha256": "1c7bbd494fc8cd537a529c3c99ebfc415f212abd3a089b1016516497f39df8b3"
+        }
+      }
+    }
+  },
+  "schema_version": 1
+}

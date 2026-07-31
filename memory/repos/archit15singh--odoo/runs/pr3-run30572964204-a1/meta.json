@@ -1,0 +1,111 @@
+{
+  "ingested_at": "2026-07-30T19:03:19Z",
+  "source_repo": "archit15singh/odoo",
+  "slug": "archit15singh--odoo",
+  "trace_id": "pr3-run30572964204-a1",
+  "pr_number": "3",
+  "run_id": "30572964204",
+  "run_attempt": "1",
+  "model": "openai/gpt-5-mini",
+  "status": "success",
+  "verdict": "REQUEST CHANGES",
+  "review_truncated": false,
+  "timings": {
+    "started_at": "2026-07-30T19:01:06Z",
+    "ended_at": "2026-07-30T19:03:18Z",
+    "total_seconds": 132,
+    "stages": [
+      {
+        "name": "preload_hub_memory",
+        "seconds": 0,
+        "exit_code": 0
+      },
+      {
+        "name": "assemble",
+        "seconds": 2,
+        "exit_code": 0
+      },
+      {
+        "name": "hermes",
+        "seconds": 130,
+        "exit_code": 0
+      },
+      {
+        "name": "distill",
+        "seconds": 0,
+        "exit_code": 0
+      }
+    ]
+  },
+  "meta": {
+    "github_sha": "5414098d6e0a4f86ae9149e08f8fba598fcd992d",
+    "github_ref": "refs/heads/19.0",
+    "github_event_name": "issue_comment",
+    "started_at": "2026-07-30T19:01:06Z",
+    "trace_meta": {
+      "trace_id": "pr3-run30572964204-a1",
+      "schema_version": 1,
+      "repo": "archit15singh/odoo",
+      "pr_number": "3",
+      "run_id": "30572964204",
+      "run_attempt": "1",
+      "model": "openai/gpt-5-mini",
+      "status": "success",
+      "started_at": "2026-07-30T19:01:06Z",
+      "ended_at": "2026-07-30T19:03:18Z",
+      "workspace_root": "/home/runner/work/odoo/odoo/workspace",
+      "github_sha": "5414098d6e0a4f86ae9149e08f8fba598fcd992d",
+      "github_ref": "refs/heads/19.0",
+      "github_event_name": "issue_comment",
+      "hermes_rc": "0",
+      "trigger_comment": "@luffy review this pr\n\nComplex fix for odoo/odoo#271153 \u2014 Unicode-level XML Char sanitizer, dict_to_xml str path, regression tests. Please deep-review correctness, encoding edge cases, and test coverage.",
+      "files": {
+        "context.md": {
+          "bytes": 2698,
+          "sha256": "3cb7d4155730590e9aa39d46dfafdc733c56383e53939daa9495dfe38c4b4312"
+        },
+        "files.txt": {
+          "bytes": 191,
+          "sha256": "831c6afb8e6a3916ec1174d4bf3d6337790415bdc111aa5def1c1d4a0152fe34"
+        },
+        "hermes.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "memory-after.md": {
+          "bytes": 4116,
+          "sha256": "d44679d64dfe6147875adfc39aea29b77337b6c0a8e302711d273e251b58fbfb"
+        },
+        "meta.env": {
+          "bytes": 529,
+          "sha256": "4bfc2accb3b913788a8dd97b81d722c4d13eccdbfdafc3e13731ccc0a9e26002"
+        },
+        "pr.diff": {
+          "bytes": 5719,
+          "sha256": "27e0a7d2dcf8d1974b1450f8f1fbca9fb4393ff07ff63263f4f94ed524ad1b1c"
+        },
+        "pr.json": {
+          "bytes": 3123,
+          "sha256": "e3289458dc5c74b7119324f865ae3851d9a91f1b62ee3cb5a89b849ad9f54bb8"
+        },
+        "prompt.md": {
+          "bytes": 5691,
+          "sha256": "644e554ef7872238a66df1475459da8ed2552ee00aa814503f55bd98779add45"
+        },
+        "review.md": {
+          "bytes": 7320,
+          "sha256": "3c9590f139a249a12aa5575d8c578e25904c7deb4eac5bb61f89bdc569a8a5d1"
+        },
+        "review.raw.md": {
+          "bytes": 7277,
+          "sha256": "ae08736fd3a0e8b967aba494951d82188b53b0958a3d10d3ce98dc34bb8bd756"
+        },
+        "timings.json": {
+          "bytes": 452,
+          "sha256": "995c7aba6f26bd6d483a56b5bd6d697a97133b859e22ab5c71ad8f472536e1b1"
+        }
+      }
+    }
+  },
+  "schema_version": 1
+}
