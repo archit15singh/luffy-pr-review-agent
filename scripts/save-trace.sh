@@ -85,33 +85,8 @@ if [[ -f "$OUT_DIR/memory-before.md" ]]; then
   cp -f "$OUT_DIR/memory-before.md" "$TRACE_DIR/memory-before.md"
 fi
 
-# Redact any accidental API keys in copied text files
-python3 - <<'PY' "$TRACE_DIR"
-import re
-import sys
-from pathlib import Path
-
-root = Path(sys.argv[1])
-patterns = [
-    (re.compile(r"sk-or-v1-[A-Za-z0-9_-]{10,}"), "[OPENROUTER_KEY_REDACTED]"),
-    (re.compile(r"(OPENROUTER_API_KEY=)\S+"), r"\1[REDACTED]"),
-    (re.compile(r"(api[_-]?key[\"']?\s*[:=]\s*[\"']?)([^\"'\s]+)", re.I), r"\1[REDACTED]"),
-]
-for path in root.rglob("*"):
-    if not path.is_file():
-        continue
-    if path.suffix.lower() in {".png", ".jpg", ".zip", ".gz", ".tar"}:
-        continue
-    try:
-        text = path.read_text(errors="replace")
-    except OSError:
-        continue
-    new = text
-    for rx, repl in patterns:
-        new = rx.sub(repl, new)
-    if new != text:
-        path.write_text(new)
-PY
+# Apply the same policy used by agent capture and hub payload publication.
+python3 "$LUFFY_ROOT/scripts/artifact_policy.py" "$TRACE_DIR"
 
 # Build inventory + meta
 export TRACE_DIR TRACE_ID REPO PR_NUMBER RUN_ID RUN_ATTEMPT MODEL STATUS STARTED_AT ENDED_AT
@@ -122,7 +97,8 @@ export GITHUB_EVENT_NAME="${GITHUB_EVENT_NAME:-}"
 export HERMES_RC="${HERMES_RC:-}"
 export TRIGGER_COMMENT="${TRIGGER_COMMENT:-}"
 
-python3 - <<'PY'
+PYTHONPATH="$LUFFY_ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}" python3 - <<'PY'
+from artifact_policy import redact_obj
 import hashlib
 import json
 import os
@@ -162,7 +138,7 @@ meta = {
     "files": files,
 }
 
-(trace_dir / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+(trace_dir / "meta.json").write_text(json.dumps(redact_obj(meta), indent=2) + "\n")
 (trace_dir / "trace.json").write_text(
     json.dumps(
         {

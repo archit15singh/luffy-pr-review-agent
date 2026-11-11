@@ -28,6 +28,7 @@ mkdir -p "$HERMES_HOME/memories"
 
 API="https://api.github.com/repos/${HUB_REPO}/contents/${MEM_PATH}"
 TMP="$(mktemp)"
+trap 'rm -f "$TMP"' EXIT
 HDR=(-H "Accept: application/vnd.github.raw+json")
 if [[ -n "$TOKEN" ]]; then
   HDR+=(-H "Authorization: Bearer ${TOKEN}")
@@ -38,20 +39,9 @@ HTTP=$(curl -sS -L -o "$TMP" -w "%{http_code}" "${HDR[@]}" "$API")
 set -e
 
 if [[ "$HTTP" == "200" && -s "$TMP" ]]; then
-  # Merge: hub memory first, then keep any existing local notes
   LOCAL="$HERMES_HOME/memories/MEMORY.md"
-  if [[ -f "$LOCAL" && -s "$LOCAL" ]]; then
-    {
-      cat "$TMP"
-      echo ""
-      echo "---"
-      echo "## Local session notes"
-      cat "$LOCAL"
-    } >"${LOCAL}.merged"
-    mv "${LOCAL}.merged" "$LOCAL"
-  else
-    cp -f "$TMP" "$LOCAL"
-  fi
+  ROOT="${LUFFY_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+  python3 "$ROOT/scripts/memory_snapshot.py" "$TMP" "$LOCAL" "${MAX_MEMORY_BYTES:-100000}"
   notice "Preloaded hub memory: ${HUB_REPO}/${MEM_PATH} ($(wc -c <"$LOCAL" | tr -d ' ') bytes)"
   echo "HUB_MEMORY=preloaded"
 else

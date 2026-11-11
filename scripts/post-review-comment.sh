@@ -49,6 +49,13 @@ export GH_REPO="$REPO"
 export GH_TOKEN="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
 command -v gh >/dev/null 2>&1 || die "gh CLI is required"
 
+# Sanitize the actual publication body through the shared export policy.
+# Keep the source review intact for local diagnosis.
+POST_BODY="$(mktemp)"
+trap 'rm -f "$POST_BODY"' EXIT
+cp "$REVIEW_FILE" "$POST_BODY"
+python3 "$ROOT/scripts/artifact_policy.py" "$POST_BODY"
+
 # ---------------------------------------------------------------------------
 # F12: replace previous Luffy review comments (same PR marker)
 # ---------------------------------------------------------------------------
@@ -77,5 +84,5 @@ if [[ "$REPLACE" == "1" || "$REPLACE" == "true" ]]; then
 fi
 
 log "Posting review to $REPO#$PR_NUMBER from $REVIEW_FILE"
-gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file "$REVIEW_FILE"
+gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file "$POST_BODY"
 log "Posted PR comment on #$PR_NUMBER"

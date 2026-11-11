@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sys
 from pathlib import Path
 
@@ -14,10 +13,7 @@ MAX_SUMMARY_CHARS = int(os.environ.get("LUFFY_HUB_MAX_SUMMARY_CHARS", "4000"))
 MAX_TRIGGER_CHARS = 500
 
 
-def redact(text: str) -> str:
-    text = re.sub(r"sk-or-v1-[A-Za-z0-9_-]{10,}", "[OPENROUTER_KEY_REDACTED]", text)
-    text = re.sub(r"(OPENROUTER_API_KEY=)\S+", r"\1[REDACTED]", text)
-    return text
+from artifact_policy import redact_text as redact, redact_obj
 
 
 def extract_verdict(review: str) -> str:
@@ -87,7 +83,6 @@ def main() -> int:
         memory_block = memory_block[:MAX_SUMMARY_CHARS] + "\n…\n"
 
     meta = {}
-    meta_path = out_dir / "meta.env"
     # Prefer trace meta.json if present
     latest = out_dir / "latest-trace-dir.txt"
     if latest.exists():
@@ -135,14 +130,14 @@ def main() -> int:
     }
 
     dest = out_dir / "hub-payload.json"
-    dest.write_text(json.dumps(payload, indent=2) + "\n")
+    dest.write_text(json.dumps(redact_obj(payload), indent=2) + "\n")
     # Size guard (~20KB soft)
     size = dest.stat().st_size
     if size > 20_000:
         # Shrink review harder
         payload["review_md"] = payload["review_md"][:8000] + "\n\n… [hard truncated] …\n"
         payload["review_truncated"] = True
-        dest.write_text(json.dumps(payload, indent=2) + "\n")
+        dest.write_text(json.dumps(redact_obj(payload), indent=2) + "\n")
         size = dest.stat().st_size
     print(dest)
     print(f"payload_bytes={size}", file=sys.stderr)
