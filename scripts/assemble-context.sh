@@ -48,7 +48,10 @@ gh pr view "$PR_NUMBER" --repo "$REPO" \
   --json number,title,body,author,baseRefName,headRefName,url,files,additions,deletions,commits \
   >"$PR_JSON_PATH"
 
-gh pr diff "$PR_NUMBER" --repo "$REPO" >"$DIFF_PATH" || true
+if ! gh pr diff "$PR_NUMBER" --repo "$REPO" >"$DIFF_PATH"; then
+  rm -f "$DIFF_PATH"
+  die "Could not download PR diff; refusing to review incomplete context"
+fi
 DIFF_SIZE="$(wc -c <"$DIFF_PATH" | tr -d ' ')"
 DIFF_TRUNCATED=false
 if [[ "${DIFF_SIZE:-0}" -gt "$MAX_DIFF_BYTES" ]]; then
