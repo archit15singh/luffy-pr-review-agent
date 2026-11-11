@@ -39,7 +39,7 @@ fi
 
 PR_NUMBER="${PR_NUMBER:-unknown}"
 REPO="${REPO:-${GITHUB_REPOSITORY:-unknown}}"
-RUN_ID="${GITHUB_RUN_ID:-local}"
+RUN_ID="${GITHUB_RUN_ID:-local-$(python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')}"
 RUN_ATTEMPT="${GITHUB_RUN_ATTEMPT:-1}"
 MODEL="${LUFFY_MODEL:-${OPENROUTER_MODEL:-unknown}}"
 STATUS="${LUFFY_STATUS:-unknown}"

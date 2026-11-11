@@ -39,6 +39,20 @@ if [[ -z "${GH_TOKEN}" ]] && command -v gh >/dev/null 2>&1; then
   fi
 fi
 
+# The reviewer inspects cwd as well as the downloaded diff. Never silently
+# review another repository or the base branch as if it were the PR head.
+EXPECTED_HEAD="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefOid --jq .headRefOid)"
+ACTUAL_HEAD="$(git -C "$WORKSPACE_ROOT" rev-parse HEAD)"
+if [[ -z "$EXPECTED_HEAD" || "$EXPECTED_HEAD" != "$ACTUAL_HEAD" ]]; then
+  echo "Workspace HEAD does not match $REPO PR #$PR_NUMBER." >&2
+  echo "Check out the PR head in a separate checkout and set WORKSPACE_ROOT to that directory." >&2
+  exit 1
+fi
+if [[ -n "$(git -C "$WORKSPACE_ROOT" status --porcelain)" ]]; then
+  echo "Review workspace must be clean; use a separate checkout at the PR head." >&2
+  exit 1
+fi
+
 "$ROOT/scripts/run-luffy-review.sh"
 
 echo "Done. Review: $OUT_DIR/review-${PR_NUMBER}.md"

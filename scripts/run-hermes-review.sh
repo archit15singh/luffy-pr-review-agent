@@ -159,6 +159,8 @@ chmod +x "$LUFFY_ROOT/scripts/capture-hermes-loop.py" 2>/dev/null || true
 python3 "$LUFFY_ROOT/scripts/capture-hermes-loop.py" || notice "capture-hermes-loop soft-failed"
 
 if [[ ! -s "$RAW_OUT" ]]; then
+  # An empty successful process is still a failed review.
+  [[ $RC -ne 0 ]] || RC=1
   cat >"$RAW_OUT" <<EOF
 ## 🏴‍☠️ Luffy Review — PR #${PR_NUMBER}
 
@@ -212,6 +214,12 @@ python3 "$LUFFY_ROOT/scripts/normalize-review.py" \
   --pr "$PR_NUMBER" \
   --run-id "${GITHUB_RUN_ID:-local}"
 
+if [[ $RC -ne 0 ]]; then
+  "$LUFFY_ROOT/scripts/write-failure-review.sh" "$PR_NUMBER" "$OUT_DIR" \
+    "Hermes failed to produce a review successfully (exit $RC). Partial output is available in the raw trace only." \
+    "Fix the runner/provider failure, then rerun the review." >/dev/null
+fi
+
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
     echo "review_file=$FINAL_OUT"
@@ -228,3 +236,6 @@ notice "Review written: $FINAL_OUT ($(wc -c <"$FINAL_OUT" | tr -d ' ') bytes)"
 if [[ -f "$LOOP_DIR/agent-loop.json" ]]; then
   notice "Agent loop captured: $LOOP_DIR"
 fi
+
+# A normalized failure report is an artifact, not a successful model run.
+exit "$RC"

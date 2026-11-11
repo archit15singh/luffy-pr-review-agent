@@ -21,6 +21,16 @@ SCRIPTS="$LUFFY_ROOT/scripts"
 chmod +x "$SCRIPTS"/*.sh 2>/dev/null || true
 
 mkdir -p "$OUT_DIR"
+# A reused output directory must never promote the preceding run's artifacts.
+rm -f "$OUT_DIR/meta.env" "$OUT_DIR/latest-trace-dir.txt" \
+  "$OUT_DIR/hermes-usage.json" "$OUT_DIR/hermes-run.log" \
+  "$OUT_DIR/memory-before.md" "$OUT_DIR/prompt.md" "$OUT_DIR/context.md" \
+  "$OUT_DIR/pr.json" "$OUT_DIR/pr.diff" "$OUT_DIR/files.txt"
+if [[ -n "${PR_NUMBER:-}" ]]; then
+  rm -f "$OUT_DIR/review-${PR_NUMBER}.md" "$OUT_DIR/review-${PR_NUMBER}.raw.md" \
+    "$OUT_DIR/hermes-${PR_NUMBER}.stderr"
+fi
+rm -rf "$OUT_DIR/agent-loop"
 export LUFFY_STARTED_AT
 LUFFY_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 TIMINGS_FILE="$OUT_DIR/timings.json"
@@ -63,6 +73,12 @@ fi
 
 if [[ $ORCH_RC -eq 0 ]]; then
   stage hermes "$SCRIPTS/run-hermes-review.sh" || ORCH_RC=$?
+fi
+
+if [[ $ORCH_RC -ne 0 && ! -s "$OUT_DIR/review-${PR_NUMBER:-unknown}.md" ]]; then
+  "$SCRIPTS/write-failure-review.sh" "${PR_NUMBER:-unknown}" "$OUT_DIR" \
+    "Review pipeline failed before producing a model review (exit $ORCH_RC)." \
+    "Fix the failed stage shown in timings.json, then rerun." >/dev/null
 fi
 
 # Capture hermes rc from timings if available
