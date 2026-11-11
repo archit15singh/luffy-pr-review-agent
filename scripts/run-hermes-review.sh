@@ -144,7 +144,7 @@ import sys
 from pathlib import Path
 src, dest, off = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3] or 0)
 data = src.read_bytes()
-chunk = data[off:] if off < len(data) else data[-200_000:]
+chunk = data[off:]  # No new bytes means no current-run log, not the old tail.
 dest.write_bytes(chunk)
 print(f"hermes-run.log bytes={len(chunk)}", file=sys.stderr)
 PY

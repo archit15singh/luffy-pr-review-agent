@@ -19,38 +19,14 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import re
+import shutil
 import sqlite3
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REDACT = [
-    (re.compile(r"sk-or-v1-[A-Za-z0-9_-]+"), "[OPENROUTER_KEY_REDACTED]"),
-    (re.compile(r"sk-[A-Za-z0-9]{20,}"), "[API_KEY_REDACTED]"),
-    (re.compile(r"Bearer\s+[A-Za-z0-9._\-]+", re.I), "Bearer [REDACTED]"),
-    (re.compile(r"OPENROUTER_API_KEY\s*=\s*\S+"), "OPENROUTER_API_KEY=[REDACTED]"),
-]
-
-
-def redact_text(s: str) -> str:
-    if not s:
-        return s
-    out = s
-    for pat, repl in REDACT:
-        out = pat.sub(repl, out)
-    return out
-
-
-def redact_obj(o: Any) -> Any:
-    if isinstance(o, str):
-        return redact_text(o)
-    if isinstance(o, list):
-        return [redact_obj(x) for x in o]
-    if isinstance(o, dict):
-        return {k: redact_obj(v) for k, v in o.items()}
-    return o
+from artifact_policy import redact_text, redact_obj
 
 
 def load_usage(path: Path | None) -> dict:
@@ -63,7 +39,7 @@ def load_usage(path: Path | None) -> dict:
 
 
 def query_messages(db_path: Path, session_id: str | None) -> list[dict]:
-    if not db_path.is_file():
+    if not session_id or not db_path.is_file():
         return []
     try:
         conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
@@ -80,24 +56,10 @@ def query_messages(db_path: Path, session_id: str | None) -> list[dict]:
             if optional in cols:
                 select_cols.append(optional)
         col_sql = ", ".join(select_cols)
-        if session_id:
-            rows = conn.execute(
-                f"SELECT {col_sql} FROM messages WHERE session_id = ? ORDER BY id ASC",
-                (session_id,),
-            ).fetchall()
-        else:
-            # Latest session with most messages
-            row = conn.execute(
-                "SELECT session_id, COUNT(*) c FROM messages "
-                "GROUP BY session_id ORDER BY c DESC LIMIT 1"
-            ).fetchone()
-            if not row:
-                return []
-            session_id = row[0]
-            rows = conn.execute(
-                f"SELECT {col_sql} FROM messages WHERE session_id = ? ORDER BY id ASC",
-                (session_id,),
-            ).fetchall()
+        rows = conn.execute(
+            f"SELECT {col_sql} FROM messages WHERE session_id = ? ORDER BY id ASC",
+            (session_id,),
+        ).fetchall()
         out = []
         for r in rows:
             d = {k: r[k] for k in r.keys()}
@@ -222,7 +184,8 @@ def render_markdown(pkg: dict) -> str:
 
 
 def main() -> int:
-    hermes_home = Path(os.environ.get("HERMES_HOME", "")).expanduser()
+    home_value = os.environ.get("HERMES_HOME")
+    hermes_home = Path(home_value).expanduser() if home_value else None
     out_dir = Path(os.environ.get("OUT_DIR", ".luffy-out")).expanduser()
     loop_dir = Path(os.environ.get("AGENT_LOOP_DIR", str(out_dir / "agent-loop")))
     usage_path = Path(os.environ.get("HERMES_USAGE_FILE", str(out_dir / "hermes-usage.json")))
@@ -230,6 +193,10 @@ def main() -> int:
     provider = os.environ.get("LUFFY_PROVIDER") or "openrouter"
 
     loop_dir.mkdir(parents=True, exist_ok=True)
+    # These are generated exports owned by capture, including legacy exports.
+    shutil.rmtree(loop_dir / 'sessions-export', ignore_errors=True)
+    for name in ('agent.log', 'errors.log', 'usage.json'):
+        (loop_dir / name).unlink(missing_ok=True)
     usage = load_usage(usage_path if usage_path.is_file() else None)
     session_id = usage.get("session_id")
 
@@ -239,46 +206,15 @@ def main() -> int:
     steps = steps_from_messages(messages if isinstance(messages, list) else [])
     tool_turns = sum(1 for s in steps if s.get("kind") == "assistant_tool_calls")
 
-    # Copy / truncate agent.log
-    log_src = hermes_home / "logs" / "agent.log" if hermes_home else None
-    log_dest = loop_dir / "agent.log"
+    # Export only the runner's byte-offset slice, never global logs or
+    # unrelated files from Hermes' sessions directory.
+    log_src = out_dir / "hermes-run.log"
     log_excerpt = ""
-    if log_src and log_src.is_file():
-        raw = log_src.read_text(errors="replace")
-        # keep last 200k chars
-        raw = raw[-200_000:]
-        log_excerpt = redact_text(raw)
-        log_dest.write_text(log_excerpt)
-
+    if log_src.is_file():
+        log_excerpt = redact_text(log_src.read_text(errors="replace")[-200_000:])
+        (loop_dir / "agent.log").write_text(log_excerpt)
     if usage:
-        (loop_dir / "usage.json").write_text(
-            json.dumps(redact_obj(usage), indent=2) + "\n"
-        )
-
-    # Also grab errors.log tail if present
-    err_src = hermes_home / "logs" / "errors.log" if hermes_home else None
-    if err_src and err_src.is_file():
-        err = redact_text(err_src.read_text(errors="replace")[-50_000:])
-        (loop_dir / "errors.log").write_text(err)
-
-    # List sessions dir files (names only + small jsonl copies)
-    sessions_meta = []
-    sess_dir = hermes_home / "sessions" if hermes_home else None
-    if sess_dir and sess_dir.is_dir():
-        export_dir = loop_dir / "sessions-export"
-        export_dir.mkdir(exist_ok=True)
-        for p in sorted(sess_dir.rglob("*"))[:50]:
-            if p.is_file() and p.stat().st_size < 2_000_000:
-                rel = str(p.relative_to(sess_dir))
-                sessions_meta.append({"path": rel, "bytes": p.stat().st_size})
-                try:
-                    data = p.read_bytes()
-                    # text-ish
-                    if p.suffix in {".json", ".jsonl", ".md", ".txt", ".log"} or b"{" in data[:20]:
-                        text = redact_text(data.decode("utf-8", errors="replace"))
-                        (export_dir / p.name).write_text(text[:500_000])
-                except Exception:
-                    pass
+        (loop_dir / "usage.json").write_text(json.dumps(redact_obj(usage), indent=2) + "\n")
 
     pkg = {
         "schema_version": 1,
@@ -296,7 +232,8 @@ def main() -> int:
         "agent_log_sha256": hashlib.sha256(log_excerpt.encode("utf-8")).hexdigest()
         if log_excerpt
         else None,
-        "sessions_files": sessions_meta,
+        "sessions_files": [],
+        "capture_warning": None if session_id else "No current session ID; message capture skipped.",
     }
 
     (loop_dir / "agent-loop.json").write_text(json.dumps(pkg, indent=2, default=str) + "\n")
